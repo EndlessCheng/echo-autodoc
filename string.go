@@ -1,5 +1,7 @@
 package autodoc
 
+import "unsafe"
+
 // 兼容低版本 Golang
 
 // A stringBuilder is used to efficiently build a string using Write methods.
@@ -16,6 +18,5 @@ func (sb *stringBuilder) WriteString(s string) {
 
 // String returns the accumulated string.
 func (sb *stringBuilder) String() string {
-	return string(sb.buf)
-	//return *(*string)(unsafe.Pointer(&sb.buf))
+	return *(*string)(unsafe.Pointer(&sb.buf))
 }

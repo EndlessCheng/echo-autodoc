@@ -13,7 +13,7 @@ func getRealHandlerName(name string) string {
 		last := splits[len(splits)-1]
 		name = last[:len(last)-len(_suffix)]
 	}
-	return strings.Title(name)
+	return name
 }
 
 type APICollector struct {

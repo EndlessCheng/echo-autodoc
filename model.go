@@ -1,6 +1,9 @@
 package autodoc
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Param struct {
 	type_ string
@@ -52,7 +55,7 @@ func (a *api) addResponseParam(type_ string, name string, desc string) {
 func (a *api) String() string {
 	sb := stringBuilder{}
 	// TODO: find DOC
-	sb.WriteString(fmt.Sprintf("### %s\n\n`%s %s`\n", a.handlerName, a.method, a.path))
+	sb.WriteString(fmt.Sprintf("### %s\n\n`%s %s`\n", strings.Title(a.handlerName), a.method, a.path))
 
 	if len(a.queryParams) > 0 {
 		sb.WriteString("\nURL 参数\n\n")

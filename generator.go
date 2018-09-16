@@ -9,7 +9,6 @@ import (
 	"net/url"
 	"reflect"
 	"github.com/labstack/echo"
-	"os"
 )
 
 type docGenerator struct {
@@ -105,19 +104,30 @@ func (dg *docGenerator) QueryParam(name string) string {
 func getTypeType(v reflect.Type) string {
 	switch v.Kind() {
 	case reflect.Invalid:
-		panic("[_getValueType] 代码有误！")
+		panic("[getTypeType] 代码有误！")
 	case reflect.Bool:
 		return "bool"
-	case reflect.Int, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint32, reflect.Uint64:
+	case reflect.Int,
+		reflect.Int8,
+		reflect.Int16,
+		reflect.Int32,
+		reflect.Int64,
+		reflect.Uint,
+		reflect.Uint8,
+		reflect.Uint16,
+		reflect.Uint32,
+		reflect.Uint64:
 		return "int"
-	case reflect.Float32, reflect.Float64:
+	case reflect.Float32,
+		reflect.Float64:
 		return "float"
 	case reflect.String:
 		return "string"
-	case reflect.Slice:
+	case reflect.Array,
+		reflect.Slice:
 		return getTypeType(v.Elem()) + " array"
 	default:
-		return "object" // TODO: more detail?
+		return "object"
 	}
 }
 
@@ -125,12 +135,12 @@ func getType(i interface{}) string {
 	return getTypeType(reflect.TypeOf(i))
 }
 
-func parseStruct(structType reflect.Type, addParam func(type_ string, name string, desc string)) {
-	if structType.Kind() == reflect.Ptr {
+func _parseStruct(prefix string, structType reflect.Type, addParam func(type_ string, name string, desc string)) {
+	if structType.Kind() == reflect.Ptr || structType.Kind() == reflect.Slice {
 		structType = structType.Elem()
 	}
 	if structType.Kind() != reflect.Struct {
-		fmt.Fprintln(os.Stderr, "暂不支持非 struct")
+		return
 	}
 
 	for i := 0; i < structType.NumField(); i++ {
@@ -143,11 +153,23 @@ func parseStruct(structType reflect.Type, addParam func(type_ string, name strin
 		if name == "" {
 			name = field.Name
 		}
+		name = prefix + name
 
 		desc := field.Tag.Get("desc")
 
 		addParam(type_, name, desc)
+
+		switch field.Type.Kind() {
+		case reflect.Slice,
+			reflect.Ptr,
+			reflect.Struct:
+			_parseStruct(name+".", field.Type, addParam)
+		}
 	}
+}
+
+func parseStruct(structType reflect.Type, addParam func(type_ string, name string, desc string)) {
+	_parseStruct("", structType, addParam)
 }
 
 func (dg *docGenerator) Bind(i interface{}) error {
@@ -158,14 +180,14 @@ func (dg *docGenerator) Bind(i interface{}) error {
 
 func (dg *docGenerator) JSON(code int, i interface{}) error {
 	if code != http.StatusOK {
-		// TODO: panic(code)
+		// TODO: ignore?
 	}
 
 	data, err := json.MarshalIndent(i, "", "\t")
 	if err != nil {
 		panic(err)
 	}
-	docGen.currentAPI().returnExampleJSON = string(data)
+	docGen.currentAPI().responseExampleJSON = string(data)
 
 	switch val := i.(type) {
 	case map[string]interface{}:
@@ -174,16 +196,16 @@ func (dg *docGenerator) JSON(code int, i interface{}) error {
 				switch val := value.(type) {
 				case map[string]interface{}:
 					for name, v := range val {
-						docGen.currentAPI().addReturnParam(getType(v), name, "")
+						docGen.currentAPI().addResponseParam(getType(v), name, "")
 					}
 				default:
-					docGen.currentAPI().addReturnParam(getType(val), key, "")
+					docGen.currentAPI().addResponseParam(getType(val), key, "")
 				}
 			}
 		}
 	default:
 		// 否则是个 struct 或 struct 指针
-		parseStruct(reflect.TypeOf(val), docGen.currentAPI().addReturnParam)
+		parseStruct(reflect.TypeOf(val), docGen.currentAPI().addResponseParam)
 	}
 
 	return nil

@@ -2,13 +2,13 @@ package autodoc
 
 import "fmt"
 
-type param struct {
+type Param struct {
 	type_ string
 	name  string
 	desc  string
 }
 
-type paramList []param
+type paramList []Param
 
 func (pl paramList) String() string {
 	sb := stringBuilder{}
@@ -23,30 +23,30 @@ func (pl paramList) String() string {
 }
 
 type api struct {
-	handlerName       string
-	method            string
-	path              string
-	queryParams       paramList
-	jsonParams        paramList
-	formParams        paramList
-	returnParams      paramList
-	returnExampleJSON string
+	handlerName         string
+	method              string
+	path                string
+	queryParams         paramList
+	jsonParams          paramList
+	formParams          paramList
+	responseParams      paramList
+	responseExampleJSON string
 }
 
 func (a *api) addQueryParam(type_ string, name string, desc string) {
-	a.queryParams = append(a.queryParams, param{type_, name, desc})
+	a.queryParams = append(a.queryParams, Param{type_, name, desc})
 }
 
 func (a *api) addJSONParam(type_ string, name string, desc string) {
-	a.jsonParams = append(a.jsonParams, param{type_, name, desc})
+	a.jsonParams = append(a.jsonParams, Param{type_, name, desc})
 }
 
 func (a *api) addFormParam(type_ string, name string, desc string) {
-	a.jsonParams = append(a.jsonParams, param{type_, name, desc})
+	a.jsonParams = append(a.jsonParams, Param{type_, name, desc})
 }
 
-func (a *api) addReturnParam(type_ string, name string, desc string) {
-	a.returnParams = append(a.returnParams, param{type_, name, desc})
+func (a *api) addResponseParam(type_ string, name string, desc string) {
+	a.responseParams = append(a.responseParams, Param{type_, name, desc})
 }
 
 func (a *api) String() string {
@@ -69,13 +69,13 @@ func (a *api) String() string {
 		sb.WriteString(a.formParams.String())
 	}
 
-	if len(a.returnParams) > 0 {
+	if len(a.responseParams) > 0 {
 		sb.WriteString("\n返回\n\n")
-		sb.WriteString(a.returnParams.String())
+		sb.WriteString(a.responseParams.String())
 	}
 
-	if a.returnExampleJSON != "" {
-		sb.WriteString(fmt.Sprintf("例如：\n```json\n%s\n```\n", string(a.returnExampleJSON)))
+	if a.responseExampleJSON != "" {
+		sb.WriteString(fmt.Sprintf("例如：\n```json\n%s\n```\n", string(a.responseExampleJSON)))
 	}
 
 	return sb.String()

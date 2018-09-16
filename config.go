@@ -1,5 +1,10 @@
 package autodoc
 
+var DefaultMarkdownHeader = `# 接口文档
+
+## HTTP 接口
+`
+
 var DefaultGetReturn interface{} = 1
 var DefaultQueryParamReturn = "1"
 

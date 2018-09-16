@@ -27,10 +27,7 @@ func (dg *docGenerator) add(handlerName string, method string, path string) {
 
 func (dg *docGenerator) generateMarkdown() string {
 	sb := stringBuilder{}
-	sb.WriteString(`# 接口文档
-
-## HTTP 接口
-`)
+	sb.WriteString(DefaultMarkdownHeader)
 	for _, api := range dg.apiList {
 		sb.WriteString(fmt.Sprintf("\n%s", api.String()))
 	}

@@ -101,7 +101,15 @@ func (dg *docGenerator) QueryParam(name string) string {
 	return DefaultQueryParamReturn
 }
 
+func dereference(v reflect.Type) reflect.Type {
+	if v.Kind() == reflect.Ptr {
+		return v.Elem()
+	}
+	return v
+}
+
 func getTypeType(v reflect.Type) string {
+	v = dereference(v)
 	switch v.Kind() {
 	case reflect.Invalid:
 		panic("[getTypeType] 代码有误！")
@@ -145,25 +153,31 @@ func _parseStruct(prefix string, structType reflect.Type, addParam func(type_ st
 
 	for i := 0; i < structType.NumField(); i++ {
 		field := structType.Field(i)
+		fieldType := dereference(field.Type)
 
-		type_ := getTypeType(field.Type)
-
+		type_ := getTypeType(fieldType)
+		fmt.Println(fieldType.Name())
+		// time.Time 固定成 string
+		if fieldType.Name() == "Time" {
+			type_ = "string"
+		}
 		// 不写 json tag 的话，就用属性类型代替
 		name := field.Tag.Get("json")
 		if name == "" {
 			name = field.Name
 		}
 		name = prefix + name
-
 		desc := field.Tag.Get("desc")
-
 		addParam(type_, name, desc)
 
-		switch field.Type.Kind() {
-		case reflect.Slice,
-			reflect.Ptr,
-			reflect.Struct:
-			_parseStruct(name+".", field.Type, addParam)
+		// time.Time 固定成 string
+		if fieldType.Name() != "Time" {
+			switch field.Type.Kind() {
+			case reflect.Slice,
+				reflect.Ptr,
+				reflect.Struct:
+				_parseStruct(name+".", field.Type, addParam)
+			}
 		}
 	}
 }

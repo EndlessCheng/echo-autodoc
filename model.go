@@ -25,7 +25,7 @@ func (pl paramList) String() string {
 	return sb.String()
 }
 
-type api struct {
+type API struct {
 	handlerName         string
 	method              string
 	path                string
@@ -36,23 +36,23 @@ type api struct {
 	responseExampleJSON string
 }
 
-func (a *api) addQueryParam(type_ string, name string, desc string) {
-	a.queryParams = append(a.queryParams, Param{type_, name, desc})
+func (a *API) AddQueryParam(p Param) {
+	a.queryParams = append(a.queryParams, p)
 }
 
-func (a *api) addJSONParam(type_ string, name string, desc string) {
-	a.jsonParams = append(a.jsonParams, Param{type_, name, desc})
+func (a *API) AddJSONParam(p Param) {
+	a.jsonParams = append(a.jsonParams, p)
 }
 
-func (a *api) addFormParam(type_ string, name string, desc string) {
-	a.jsonParams = append(a.jsonParams, Param{type_, name, desc})
+func (a *API) AddFormParam(p Param) {
+	a.jsonParams = append(a.jsonParams, p)
 }
 
-func (a *api) addResponseParam(type_ string, name string, desc string) {
-	a.responseParams = append(a.responseParams, Param{type_, name, desc})
+func (a *API) AddResponseParam(p Param) {
+	a.responseParams = append(a.responseParams, p)
 }
 
-func (a *api) String() string {
+func (a *API) String() string {
 	sb := stringBuilder{}
 	// TODO: find DOC
 	sb.WriteString(fmt.Sprintf("### %s\n\n`%s %s`\n", strings.Title(a.handlerName), a.method, a.path))

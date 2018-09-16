@@ -1,25 +1,34 @@
 package autodoc
 
-var DefaultMarkdownHeader = `# 接口文档
+var (
+	DefaultMarkdownHeader = `# 接口文档
 
 ## HTTP 接口
 `
+	DefaultGetReturn        interface{} = 1
+	DefaultQueryParamReturn             = "1"
+)
 
-var DefaultGetReturn interface{} = 1
-var DefaultQueryParamReturn = "1"
+var (
+	customQueryParams    = map[string]Param{}
+	customPostJSONParams = map[string]Param{}
+	customResponseParams = map[string]Param{}
+)
 
-var customURLParams []Param
-var customJSONParams []Param
-var customResponseParams []Param
-
-func SetURLParams(params ...Param) {
-	customURLParams = params
+func SetQueryParams(params ...Param) {
+	for _, p := range params {
+		customQueryParams[p.name] = p
+	}
 }
 
-func SetJSONParams(params ...Param) {
-	customJSONParams = params
+func SetPostJSONParams(params ...Param) {
+	for _, p := range params {
+		customPostJSONParams[p.name] = p
+	}
 }
 
 func SetResponseParams(params ...Param) {
-	customResponseParams = params
+	for _, p := range params {
+		customResponseParams[p.name] = p
+	}
 }

@@ -22,7 +22,7 @@ URL 参数
 |参数|描述|取值|
 |-------|--------|--------|
 |isbn|ISBN|string|
-|name|书名|string|
+|title|书名|string|
 |authors|作者|object array|
 |authors.name|姓名|string|
 |authors.age|年龄|int|
@@ -34,18 +34,33 @@ URL 参数
 返回示例：
 ```json
 {
-	"isbn": "1",
-	"name": "",
+	"isbn": "9780262033848",
+	"title": "Introduction to Algorithms, 3rd Edition",
 	"authors": [
 		{
-			"name": "",
-			"age": 0,
+			"name": "Thomas H. Cormen",
+			"age": 62,
+			"sex": 0
+		},
+		{
+			"name": "Charles E. Leiserson",
+			"age": 64,
+			"sex": 0
+		},
+		{
+			"name": "Ronald L. Rivest",
+			"age": 71,
+			"sex": 0
+		},
+		{
+			"name": "Clifford Stein",
+			"age": 52,
 			"sex": 0
 		}
 	],
-	"press": "",
-	"publish_date": "",
-	"price": 0
+	"press": "The MIT Press",
+	"publish_date": "2009-07-31",
+	"price": 94
 }
 ```
 
@@ -61,7 +76,7 @@ JSON 参数
 |参数|描述|取值|
 |-------|--------|--------|
 |isbn|ISBN|string|
-|name|书名|string|
+|title|书名|string|
 |authors|作者|object array|
 |authors.name|姓名|string|
 |authors.age|年龄|int|

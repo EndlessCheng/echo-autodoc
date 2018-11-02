@@ -42,8 +42,8 @@ func (h *handler) index(c echo.Context) error {
 }
 
 func (h *handler) getBook(c echo.Context) error {
-	isbn := c.QueryParam("isbn")
-	return c.JSON(http.StatusOK, &Book{ISBN: isbn, Authors: []Author{{}}})
+	c.QueryParam("isbn")
+	return c.JSON(http.StatusOK, &exampleBook)
 }
 
 func (h *handler) addBook(c echo.Context) error {

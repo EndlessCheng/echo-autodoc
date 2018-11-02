@@ -15,8 +15,10 @@ func runHTTPServer() error {
 }
 
 func setHandlers(g autodoc.GroupInterface) { // 原代码：*echo.Echo
+	h := &handler{}
+
 	// [skip gen]
-	g.GET("/", index)
+	g.GET("/", h.index)
 
 	api := g.Group("/api")
 
@@ -25,23 +27,26 @@ func setHandlers(g autodoc.GroupInterface) { // 原代码：*echo.Echo
 	// - 机械工业出版社
 	// - 电子工业出版社
 	// - 人民邮电出版社
-	api.GET("/book", getBook)
+	api.GET("/book", h.getBook)
 
 	// 添加一本书
 	// POST 时注意作者需要存到一个数组中
-	api.POST("/add_book", addBook)
+	api.POST("/add_book", h.addBook)
 }
 
-func index(c echo.Context) error {
+type handler struct {
+}
+
+func (h *handler) index(c echo.Context) error {
 	return c.String(http.StatusOK, time.Now().Format("2006-01-02 15:04:05"))
 }
 
-func getBook(c echo.Context) error {
+func (h *handler) getBook(c echo.Context) error {
 	isbn := c.QueryParam("isbn")
 	return c.JSON(http.StatusOK, &Book{ISBN: isbn, Authors: []Author{{}}})
 }
 
-func addBook(c echo.Context) error {
+func (h *handler) addBook(c echo.Context) error {
 	d := Book{}
 	if err := c.Bind(&d); err != nil {
 		return c.String(http.StatusBadRequest, err.Error())

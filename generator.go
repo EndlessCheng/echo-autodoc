@@ -11,22 +11,22 @@ import (
 	"github.com/labstack/echo"
 )
 
-// DocGenerator 实现 echo.Context 接口，从而 hack 进业务逻辑代码（handler.go）中，详细见 collector.go
-type DocGenerator struct {
-	apiList []*API
+// docGenerator 实现 echo.Context 接口，从而 hack 进业务逻辑代码（handler.go）中，详细见 collector.go
+type docGenerator struct {
+	apiList []*api
 }
 
-var docGen = &DocGenerator{}
+var docGen = &docGenerator{}
 
-func (dg *DocGenerator) currentAPI() *API {
+func (dg *docGenerator) currentAPI() *api {
 	return dg.apiList[len(dg.apiList)-1]
 }
 
-func (dg *DocGenerator) add(handlerName string, method string, path string) {
-	dg.apiList = append(dg.apiList, &API{handlerName: handlerName, method: method, path: path})
+func (dg *docGenerator) add(handlerName string, method string, path string) {
+	dg.apiList = append(dg.apiList, &api{handlerName: handlerName, method: method, path: path})
 }
 
-func (dg *DocGenerator) generateMarkdown() string {
+func (dg *docGenerator) generateMarkdown() string {
 	sb := stringBuilder{}
 	sb.WriteString(DefaultMarkdownHeader)
 	for _, api := range dg.apiList {
@@ -35,76 +35,85 @@ func (dg *DocGenerator) generateMarkdown() string {
 	return sb.String()
 }
 
-func (dg *DocGenerator) Request() *http.Request                                  { return nil }
-func (dg *DocGenerator) SetRequest(r *http.Request)                              {}
-func (dg *DocGenerator) Response() *echo.Response                                { return nil }
-func (dg *DocGenerator) IsTLS() bool                                             { return false }
-func (dg *DocGenerator) IsWebSocket() bool                                       { return false }
-func (dg *DocGenerator) Scheme() string                                          { return "" }
-func (dg *DocGenerator) RealIP() string                                          { return "" }
-func (dg *DocGenerator) Path() string                                            { return "" }
-func (dg *DocGenerator) SetPath(p string)                                        {}
-func (dg *DocGenerator) Param(name string) string                                { return "" }
-func (dg *DocGenerator) ParamNames() []string                                    { return nil }
-func (dg *DocGenerator) SetParamNames(names ...string)                           {}
-func (dg *DocGenerator) ParamValues() []string                                   { return nil }
-func (dg *DocGenerator) SetParamValues(values ...string)                         {}
-func (dg *DocGenerator) QueryParams() url.Values                                 { return nil }
-func (dg *DocGenerator) QueryString() string                                     { return "" }
-func (dg *DocGenerator) FormParams() (url.Values, error)                         { return nil, nil }
-func (dg *DocGenerator) MultipartForm() (*multipart.Form, error)                 { return nil, nil }
-func (dg *DocGenerator) Cookie(name string) (*http.Cookie, error)                { return nil, nil }
-func (dg *DocGenerator) SetCookie(cookie *http.Cookie)                           {}
-func (dg *DocGenerator) Cookies() []*http.Cookie                                 { return nil }
-func (dg *DocGenerator) Set(key string, val interface{})                         {}
-func (dg *DocGenerator) Validate(i interface{}) error                            { return nil }
-func (dg *DocGenerator) Render(code int, name string, data interface{}) error    { return nil }
-func (dg *DocGenerator) HTML(code int, html string) error                        { return nil }
-func (dg *DocGenerator) HTMLBlob(code int, b []byte) error                       { return nil }
-func (dg *DocGenerator) String(code int, s string) error                         { return nil }
-func (dg *DocGenerator) JSONPretty(code int, i interface{}, indent string) error { return nil }
-func (dg *DocGenerator) JSONBlob(code int, b []byte) error                       { return nil }
-func (dg *DocGenerator) JSONP(code int, callback string, i interface{}) error    { return nil }
-func (dg *DocGenerator) JSONPBlob(code int, callback string, b []byte) error     { return nil }
-func (dg *DocGenerator) XML(code int, i interface{}) error                       { return nil }
-func (dg *DocGenerator) XMLPretty(code int, i interface{}, indent string) error  { return nil }
-func (dg *DocGenerator) XMLBlob(code int, b []byte) error                        { return nil }
-func (dg *DocGenerator) Blob(code int, contentType string, b []byte) error       { return nil }
-func (dg *DocGenerator) Stream(code int, contentType string, r io.Reader) error  { return nil }
-func (dg *DocGenerator) File(file string) error                                  { return nil }
-func (dg *DocGenerator) Attachment(file string, name string) error               { return nil }
-func (dg *DocGenerator) Inline(file string, name string) error                   { return nil }
-func (dg *DocGenerator) NoContent(code int) error                                { return nil }
-func (dg *DocGenerator) Redirect(code int, url string) error                     { return nil }
-func (dg *DocGenerator) Error(err error)                                         {}
-func (dg *DocGenerator) Handler() echo.HandlerFunc                               { return nil }
-func (dg *DocGenerator) SetHandler(h echo.HandlerFunc)                           {}
-func (dg *DocGenerator) Logger() echo.Logger                                     { return nil }
-func (dg *DocGenerator) Echo() *echo.Echo                                        { return nil }
-func (dg *DocGenerator) Reset(r *http.Request, w http.ResponseWriter)            {}
+func (dg *docGenerator) Request() *http.Request                                  { return nil }
+func (dg *docGenerator) SetRequest(r *http.Request)                              {}
+func (dg *docGenerator) Response() *echo.Response                                { return nil }
+func (dg *docGenerator) IsTLS() bool                                             { return false }
+func (dg *docGenerator) IsWebSocket() bool                                       { return false }
+func (dg *docGenerator) Scheme() string                                          { return "" }
+func (dg *docGenerator) RealIP() string                                          { return "" }
+func (dg *docGenerator) Path() string                                            { return "" }
+func (dg *docGenerator) SetPath(p string)                                        {}
+func (dg *docGenerator) Param(name string) string                                { return "" }
+func (dg *docGenerator) ParamNames() []string                                    { return nil }
+func (dg *docGenerator) SetParamNames(names ...string)                           {}
+func (dg *docGenerator) ParamValues() []string                                   { return nil }
+func (dg *docGenerator) SetParamValues(values ...string)                         {}
+func (dg *docGenerator) QueryParams() url.Values                                 { return nil }
+func (dg *docGenerator) QueryString() string                                     { return "" }
+func (dg *docGenerator) FormParams() (url.Values, error)                         { return nil, nil }
+func (dg *docGenerator) MultipartForm() (*multipart.Form, error)                 { return nil, nil }
+func (dg *docGenerator) Cookie(name string) (*http.Cookie, error)                { return nil, nil }
+func (dg *docGenerator) SetCookie(cookie *http.Cookie)                           {}
+func (dg *docGenerator) Cookies() []*http.Cookie                                 { return nil }
+func (dg *docGenerator) Set(key string, val interface{})                         {}
+func (dg *docGenerator) Validate(i interface{}) error                            { return nil }
+func (dg *docGenerator) Render(code int, name string, data interface{}) error    { return nil }
+func (dg *docGenerator) HTML(code int, html string) error                        { return nil }
+func (dg *docGenerator) HTMLBlob(code int, b []byte) error                       { return nil }
+func (dg *docGenerator) String(code int, s string) error                         { return nil }
+func (dg *docGenerator) JSONPretty(code int, i interface{}, indent string) error { return nil }
+func (dg *docGenerator) JSONBlob(code int, b []byte) error                       { return nil }
+func (dg *docGenerator) JSONP(code int, callback string, i interface{}) error    { return nil }
+func (dg *docGenerator) JSONPBlob(code int, callback string, b []byte) error     { return nil }
+func (dg *docGenerator) XML(code int, i interface{}) error                       { return nil }
+func (dg *docGenerator) XMLPretty(code int, i interface{}, indent string) error  { return nil }
+func (dg *docGenerator) XMLBlob(code int, b []byte) error                        { return nil }
+func (dg *docGenerator) Blob(code int, contentType string, b []byte) error       { return nil }
+func (dg *docGenerator) Stream(code int, contentType string, r io.Reader) error  { return nil }
+func (dg *docGenerator) File(file string) error                                  { return nil }
+func (dg *docGenerator) Attachment(file string, name string) error               { return nil }
+func (dg *docGenerator) Inline(file string, name string) error                   { return nil }
+func (dg *docGenerator) NoContent(code int) error                                { return nil }
+func (dg *docGenerator) Redirect(code int, url string) error                     { return nil }
+func (dg *docGenerator) Error(err error)                                         {}
+func (dg *docGenerator) Handler() echo.HandlerFunc                               { return nil }
+func (dg *docGenerator) SetHandler(h echo.HandlerFunc)                           {}
+func (dg *docGenerator) Logger() echo.Logger                                     { return nil }
+func (dg *docGenerator) Echo() *echo.Echo                                        { return nil }
+func (dg *docGenerator) Reset(r *http.Request, w http.ResponseWriter)            {}
 
-func (dg *DocGenerator) FormValue(name string) string {
-	dg.currentAPI().AddFormParam(Param{"string", name, ""})
-	return ""
-}
+func (dg *docGenerator) Get(key string) interface{} {
+	if param, ok := customContextGetParams[key]; ok {
+		dg.currentAPI().addQueryParam(param)
+	}
 
-func (dg *DocGenerator) FormFile(name string) (*multipart.FileHeader, error) {
-	dg.currentAPI().AddFormParam(Param{"file", name, "上传的文件"})
-	return nil, nil
-}
-
-func (dg *DocGenerator) Get(key string) interface{} {
 	return DefaultGetReturn
 }
 
-func (dg *DocGenerator) QueryParam(name string) string {
+func (dg *docGenerator) QueryParam(name string) string {
 	param, ok := customQueryParams[name]
 	if !ok {
 		param = Param{"string", name, ""}
 	}
-	dg.currentAPI().AddQueryParam(param)
+	dg.currentAPI().addQueryParam(param)
 
 	return DefaultQueryParamReturn
+}
+
+func (dg *docGenerator) FormFile(name string) (*multipart.FileHeader, error) {
+	dg.currentAPI().addFormParam(Param{"file", name, DefaultFormFileDesc})
+	return nil, nil
+}
+
+func (dg *docGenerator) FormValue(name string) string {
+	param, ok := customFormParams[name]
+	if !ok {
+		param = Param{"string", name, ""}
+	}
+	dg.currentAPI().addFormParam(param)
+
+	return DefaultFormValueReturn
 }
 
 func dereference(v reflect.Type) reflect.Type {
@@ -179,7 +188,7 @@ func _parseStruct(prefix string, structType reflect.Type) []Param {
 		desc := field.Tag.Get("desc")
 		params = append(params, Param{type_, name, desc})
 
-		// time.Time 固定成 string
+		// skip time.Time
 		if fieldType.Name() != "Time" {
 			switch field.Type.Kind() {
 			case reflect.Slice,
@@ -197,20 +206,20 @@ func parseStruct(structType reflect.Type) []Param {
 	return _parseStruct("", structType)
 }
 
-func (dg *DocGenerator) Bind(i interface{}) error {
+func (dg *docGenerator) Bind(i interface{}) error {
 	// 传进来的一定是个 struct 指针
 	params := parseStruct(reflect.TypeOf(i).Elem())
 	for _, p := range params {
 		if customParam, ok := customPostJSONParams[p.Name]; ok {
 			p = customParam
 		}
-		dg.currentAPI().AddJSONParam(p)
+		dg.currentAPI().addJSONParam(p)
 	}
 
 	return nil
 }
 
-func (dg *DocGenerator) JSON(code int, i interface{}) error {
+func (dg *docGenerator) JSON(code int, i interface{}) error {
 	if code != http.StatusOK {
 		// TODO: ignore?
 	}
@@ -228,10 +237,10 @@ func (dg *DocGenerator) JSON(code int, i interface{}) error {
 				switch val := value.(type) {
 				case map[string]interface{}:
 					for name, v := range val {
-						dg.currentAPI().AddResponseParam(Param{getType(v), name, ""})
+						dg.currentAPI().addResponseParam(Param{getType(v), name, ""})
 					}
 				default:
-					dg.currentAPI().AddResponseParam(Param{getType(val), key, ""})
+					dg.currentAPI().addResponseParam(Param{getType(val), key, ""})
 				}
 			}
 		}
@@ -239,10 +248,10 @@ func (dg *DocGenerator) JSON(code int, i interface{}) error {
 		// 否则是个 struct 或 struct 指针
 		params := parseStruct(reflect.TypeOf(val))
 		for _, p := range params {
-			if customParam, ok := customResponseParams[p.Name]; ok {
+			if customParam, ok := customResponseJSONParams[p.Name]; ok {
 				p = customParam
 			}
-			dg.currentAPI().AddResponseParam(p)
+			dg.currentAPI().addResponseParam(p)
 		}
 	}
 

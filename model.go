@@ -24,7 +24,7 @@ func (pl paramList) String() string {
 	return sb.String()
 }
 
-type API struct {
+type api struct {
 	title       string // 从注释中提取
 	description string // 从注释中提取
 
@@ -38,23 +38,23 @@ type API struct {
 	responseExampleJSON string
 }
 
-func (a *API) AddQueryParam(p ...Param) {
+func (a *api) addQueryParam(p ...Param) {
 	a.queryParams = append(a.queryParams, p...)
 }
 
-func (a *API) AddJSONParam(p ...Param) {
+func (a *api) addJSONParam(p ...Param) {
 	a.jsonParams = append(a.jsonParams, p...)
 }
 
-func (a *API) AddFormParam(p ...Param) {
+func (a *api) addFormParam(p ...Param) {
 	a.formParams = append(a.formParams, p...)
 }
 
-func (a *API) AddResponseParam(p ...Param) {
+func (a *api) addResponseParam(p ...Param) {
 	a.responseParams = append(a.responseParams, p...)
 }
 
-func (a *API) String() string {
+func (a *api) String() string {
 	sb := stringBuilder{}
 
 	var apiTitle string

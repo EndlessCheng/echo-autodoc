@@ -21,9 +21,14 @@ func setHandlers(g autodoc.GroupInterface) { // 原代码：*echo.Echo
 	api := g.Group("/api")
 
 	// 获取一本书的信息
+	// 相关出版社有：
+	// - 机械工业出版社
+	// - 电子工业出版社
+	// - 人民邮电出版社
 	api.GET("/book", getBook)
 
 	// 添加一本书
+	// POST 时注意作者需要存到一个数组中
 	api.POST("/add_book", addBook)
 }
 
@@ -33,7 +38,7 @@ func index(c echo.Context) error {
 
 func getBook(c echo.Context) error {
 	isbn := c.QueryParam("isbn")
-	return c.JSON(http.StatusOK, &Book{ISBN: isbn})
+	return c.JSON(http.StatusOK, &Book{ISBN: isbn, Authors: []Author{{}}})
 }
 
 func addBook(c echo.Context) error {

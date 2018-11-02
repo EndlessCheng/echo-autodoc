@@ -6,11 +6,13 @@ import (
 )
 
 func Test_setHandlers(t *testing.T) {
-	// 初始化默认值
+	// 设置 URL 默认值
 	autodoc.SetQueryParams(autodoc.Param{Type: "string", Name: "isbn", Desc: "ISBN"})
 
 	g := autodoc.NewAPICollector()
 	setHandlers(g)
 
-	t.Log(g.GenerateMarkdown())
+	if err := g.GenerateMarkdownToFile("README-autogen.md"); err != nil {
+		t.Fatal(err)
+	}
 }

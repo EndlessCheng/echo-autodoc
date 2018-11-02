@@ -12,7 +12,7 @@ func Test_setHandlers(t *testing.T) {
 	g := autodoc.NewAPICollector()
 	setHandlers(g)
 
-	if err := g.GenerateMarkdownToFile("README-autogen.md"); err != nil {
+	if err := g.GenerateMarkdownToFile("README.md"); err != nil {
 		t.Fatal(err)
 	}
 }

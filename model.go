@@ -21,11 +21,13 @@ func (pl paramList) String() string {
 	for _, p := range pl {
 		sb.WriteString(fmt.Sprintf("|%s|%s|%s|\n", p.Name, p.Desc, p.Type))
 	}
-	sb.WriteString("\n")
 	return sb.String()
 }
 
 type API struct {
+	title       string // 从注释中提取
+	description string // 从注释中提取
+
 	handlerName         string
 	method              string
 	path                string
@@ -36,26 +38,38 @@ type API struct {
 	responseExampleJSON string
 }
 
-func (a *API) AddQueryParam(p Param) {
-	a.queryParams = append(a.queryParams, p)
+func (a *API) AddQueryParam(p ...Param) {
+	a.queryParams = append(a.queryParams, p...)
 }
 
-func (a *API) AddJSONParam(p Param) {
-	a.jsonParams = append(a.jsonParams, p)
+func (a *API) AddJSONParam(p ...Param) {
+	a.jsonParams = append(a.jsonParams, p...)
 }
 
-func (a *API) AddFormParam(p Param) {
-	a.jsonParams = append(a.jsonParams, p)
+func (a *API) AddFormParam(p ...Param) {
+	a.formParams = append(a.formParams, p...)
 }
 
-func (a *API) AddResponseParam(p Param) {
-	a.responseParams = append(a.responseParams, p)
+func (a *API) AddResponseParam(p ...Param) {
+	a.responseParams = append(a.responseParams, p...)
 }
 
 func (a *API) String() string {
 	sb := stringBuilder{}
-	// TODO: find DOC
-	sb.WriteString(fmt.Sprintf("### %s\n\n`%s %s`\n", strings.Title(a.handlerName), a.method, a.path))
+
+	var apiTitle string
+	if a.title != "" {
+		apiTitle = a.title
+	} else {
+		apiTitle = strings.Title(a.handlerName)
+	}
+	sb.WriteString(fmt.Sprintf("\n### %s\n", apiTitle))
+
+	sb.WriteString(fmt.Sprintf("\n`%s %s`\n", a.method, a.path))
+
+	if a.description != "" {
+		sb.WriteString("\n" + a.description + "\n")
+	}
 
 	if len(a.queryParams) > 0 {
 		sb.WriteString("\nURL 参数\n\n")
@@ -73,12 +87,12 @@ func (a *API) String() string {
 	}
 
 	if len(a.responseParams) > 0 {
-		sb.WriteString("\n返回\n\n")
+		sb.WriteString("\n返回字段\n\n")
 		sb.WriteString(a.responseParams.String())
 	}
 
 	if a.responseExampleJSON != "" {
-		sb.WriteString(fmt.Sprintf("例如：\n```json\n%s\n```\n", string(a.responseExampleJSON)))
+		sb.WriteString(fmt.Sprintf("\n返回示例：\n```json\n%s\n```\n", string(a.responseExampleJSON)))
 	}
 
 	return sb.String()

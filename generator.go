@@ -11,13 +11,14 @@ import (
 	"github.com/labstack/echo"
 )
 
+// DocGenerator 实现 echo.Context 接口，从而 hack 进业务逻辑代码（handler.go）中，详细见 collector.go
 type DocGenerator struct {
 	apiList []*API
 }
 
 var docGen = &DocGenerator{}
 
-func (dg *DocGenerator) CurrentAPI() *API {
+func (dg *DocGenerator) currentAPI() *API {
 	return dg.apiList[len(dg.apiList)-1]
 }
 
@@ -81,12 +82,14 @@ func (dg *DocGenerator) SetHandler(h echo.HandlerFunc)                          
 func (dg *DocGenerator) Logger() echo.Logger                                     { return nil }
 func (dg *DocGenerator) Echo() *echo.Echo                                        { return nil }
 func (dg *DocGenerator) Reset(r *http.Request, w http.ResponseWriter)            {}
+
 func (dg *DocGenerator) FormValue(name string) string {
-	docGen.CurrentAPI().AddFormParam(Param{"string", name, ""})
+	dg.currentAPI().AddFormParam(Param{"string", name, ""})
 	return ""
 }
+
 func (dg *DocGenerator) FormFile(name string) (*multipart.FileHeader, error) {
-	docGen.CurrentAPI().AddFormParam(Param{"file", name, "上传的文件"})
+	dg.currentAPI().AddFormParam(Param{"file", name, "上传的文件"})
 	return nil, nil
 }
 
@@ -99,7 +102,7 @@ func (dg *DocGenerator) QueryParam(name string) string {
 	if !ok {
 		param = Param{"string", name, ""}
 	}
-	docGen.CurrentAPI().AddQueryParam(param)
+	dg.currentAPI().AddQueryParam(param)
 
 	return DefaultQueryParamReturn
 }
@@ -111,11 +114,11 @@ func dereference(v reflect.Type) reflect.Type {
 	return v
 }
 
-func getTypeType(v reflect.Type) string {
+func typeToString(v reflect.Type) string {
 	v = dereference(v)
 	switch v.Kind() {
 	case reflect.Invalid:
-		panic("[getTypeType] 代码有误！")
+		panic("[typeToString] 代码有误！")
 	case reflect.Bool:
 		return "bool"
 	case reflect.Int,
@@ -136,14 +139,14 @@ func getTypeType(v reflect.Type) string {
 		return "string"
 	case reflect.Array,
 		reflect.Slice:
-		return getTypeType(v.Elem()) + " array"
+		return typeToString(v.Elem()) + " array"
 	default:
 		return "object"
 	}
 }
 
 func getType(i interface{}) string {
-	return getTypeType(reflect.TypeOf(i))
+	return typeToString(reflect.TypeOf(i))
 }
 
 func _parseStruct(prefix string, structType reflect.Type) []Param {
@@ -160,18 +163,19 @@ func _parseStruct(prefix string, structType reflect.Type) []Param {
 		field := structType.Field(i)
 		fieldType := dereference(field.Type)
 
-		type_ := getTypeType(fieldType)
-		fmt.Println(fieldType.Name())
+		type_ := typeToString(fieldType)
 		// time.Time 固定成 string
 		if fieldType.Name() == "Time" {
 			type_ = "string"
 		}
+
 		// 不写 json tag 的话，就用属性类型代替
 		name := field.Tag.Get("json")
 		if name == "" {
 			name = field.Name
 		}
 		name = prefix + name
+
 		desc := field.Tag.Get("desc")
 		params = append(params, Param{type_, name, desc})
 
@@ -200,7 +204,7 @@ func (dg *DocGenerator) Bind(i interface{}) error {
 		if customParam, ok := customPostJSONParams[p.Name]; ok {
 			p = customParam
 		}
-		docGen.CurrentAPI().AddJSONParam(p)
+		dg.currentAPI().AddJSONParam(p)
 	}
 
 	return nil
@@ -215,7 +219,7 @@ func (dg *DocGenerator) JSON(code int, i interface{}) error {
 	if err != nil {
 		panic(err)
 	}
-	docGen.CurrentAPI().responseExampleJSON = string(data)
+	dg.currentAPI().responseExampleJSON = string(data)
 
 	switch val := i.(type) {
 	case map[string]interface{}:
@@ -224,10 +228,10 @@ func (dg *DocGenerator) JSON(code int, i interface{}) error {
 				switch val := value.(type) {
 				case map[string]interface{}:
 					for name, v := range val {
-						docGen.CurrentAPI().AddResponseParam(Param{getType(v), name, ""})
+						dg.currentAPI().AddResponseParam(Param{getType(v), name, ""})
 					}
 				default:
-					docGen.CurrentAPI().AddResponseParam(Param{getType(val), key, ""})
+					dg.currentAPI().AddResponseParam(Param{getType(val), key, ""})
 				}
 			}
 		}
@@ -238,7 +242,7 @@ func (dg *DocGenerator) JSON(code int, i interface{}) error {
 			if customParam, ok := customResponseParams[p.Name]; ok {
 				p = customParam
 			}
-			docGen.CurrentAPI().AddResponseParam(p)
+			dg.currentAPI().AddResponseParam(p)
 		}
 	}
 

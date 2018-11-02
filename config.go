@@ -1,10 +1,11 @@
 package autodoc
 
 var (
+	SkipGen = "[skip gen]"
+
 	DefaultMarkdownHeader = `# 接口文档
 
-## HTTP 接口
-`
+## HTTP 接口`
 	DefaultGetReturn        interface{} = 1
 	DefaultQueryParamReturn             = "1"
 )

@@ -19,7 +19,7 @@ func TestDocGenerator_Bind(t *testing.T) {
 
 	d := struct {
 		Name      string     `json:"name" desc:"姓名"`
-		Age       int        `json:"name" desc:"年龄"`
+		Age       int        `json:"age" desc:"年龄"`
 		Male      bool       `json:"male" desc:"是否为男性"`
 		CreatedAt *time.Time `json:"created_at" desc:"创建时间"`
 	}{}

@@ -197,7 +197,7 @@ func (dg *DocGenerator) Bind(i interface{}) error {
 	// 传进来的一定是个 struct 指针
 	params := parseStruct(reflect.TypeOf(i).Elem())
 	for _, p := range params {
-		if customParam, ok := customPostJSONParams[p.name]; ok {
+		if customParam, ok := customPostJSONParams[p.Name]; ok {
 			p = customParam
 		}
 		docGen.CurrentAPI().AddJSONParam(p)
@@ -235,7 +235,7 @@ func (dg *DocGenerator) JSON(code int, i interface{}) error {
 		// 否则是个 struct 或 struct 指针
 		params := parseStruct(reflect.TypeOf(val))
 		for _, p := range params {
-			if customParam, ok := customResponseParams[p.name]; ok {
+			if customParam, ok := customResponseParams[p.Name]; ok {
 				p = customParam
 			}
 			docGen.CurrentAPI().AddResponseParam(p)

@@ -17,18 +17,18 @@ var (
 
 func SetQueryParams(params ...Param) {
 	for _, p := range params {
-		customQueryParams[p.name] = p
+		customQueryParams[p.Name] = p
 	}
 }
 
 func SetPostJSONParams(params ...Param) {
 	for _, p := range params {
-		customPostJSONParams[p.name] = p
+		customPostJSONParams[p.Name] = p
 	}
 }
 
 func SetResponseParams(params ...Param) {
 	for _, p := range params {
-		customResponseParams[p.name] = p
+		customResponseParams[p.Name] = p
 	}
 }

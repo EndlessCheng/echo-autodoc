@@ -6,9 +6,9 @@ import (
 )
 
 type Param struct {
-	type_ string
-	name  string
-	desc  string
+	Type string
+	Name string
+	Desc string
 }
 
 type paramList []Param
@@ -19,7 +19,7 @@ func (pl paramList) String() string {
 |-------|--------|--------|
 `)
 	for _, p := range pl {
-		sb.WriteString(fmt.Sprintf("|%s|%s|%s|\n", p.name, p.desc, p.type_))
+		sb.WriteString(fmt.Sprintf("|%s|%s|%s|\n", p.Name, p.Desc, p.Type))
 	}
 	sb.WriteString("\n")
 	return sb.String()

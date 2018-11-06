@@ -6,7 +6,7 @@ var (
 	DefaultMarkdownHeader = `# 接口文档
 
 ## HTTP 接口`
-	DefaultMarkdownFooter = ""
+	DefaultMarkdownFooter               = ""
 	DefaultGetReturn        interface{} = 1
 	DefaultQueryParamReturn             = "1"
 	DefaultFormValueReturn              = ""

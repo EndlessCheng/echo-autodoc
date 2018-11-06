@@ -32,6 +32,7 @@ func (dg *docGenerator) generateMarkdown() string {
 	for _, api := range dg.apiList {
 		sb.WriteString(fmt.Sprintf("\n%s", api.String()))
 	}
+	sb.WriteString(DefaultMarkdownFooter)
 	return sb.String()
 }
 

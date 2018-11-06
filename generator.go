@@ -232,16 +232,22 @@ func (dg *docGenerator) JSON(code int, i interface{}) error {
 
 	switch val := i.(type) {
 	case map[string]interface{}:
-		if len(val) > 0 {
-			for key, value := range val {
-				switch val := value.(type) {
-				case map[string]interface{}:
-					for name, v := range val {
-						dg.currentAPI().addResponseParam(Param{getType(v), name, ""})
+		for name, v := range val {
+			switch _val := v.(type) {
+			case map[string]interface{}:
+				for _name, _v := range _val {
+					p := Param{getType(_v), _name, ""}
+					if customParam, ok := customResponseJSONParams[_name]; ok {
+						p = customParam
 					}
-				default:
-					dg.currentAPI().addResponseParam(Param{getType(val), key, ""})
+					dg.currentAPI().addResponseParam(p)
 				}
+			default:
+				p := Param{getType(v), name, ""}
+				if customParam, ok := customResponseJSONParams[name]; ok {
+					p = customParam
+				}
+				dg.currentAPI().addResponseParam(p)
 			}
 		}
 	default:

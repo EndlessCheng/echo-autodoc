@@ -20,6 +20,7 @@ func readLine(filePath string, lineno int) string {
 	return lines[lineno-1]
 }
 
+// 读取调用处上方的注释(块)
 // lineno 为注释块的最后一行
 func readAboveComments(filePath string, lineno int) (comments []string) {
 	for ; lineno > 0; lineno-- {
@@ -36,4 +37,15 @@ func readAboveComments(filePath string, lineno int) (comments []string) {
 		comments[i], comments[j] = comments[j], comments[i]
 	}
 	return comments
+}
+
+// 读取调用处尾部的注释
+// 简单起见，只读取最后一个 ) // 之后的内容
+func readTailComment(filePath string, lineno int) (comment string) {
+	line := readLine(filePath, lineno)
+	splits := strings.Split(line, ") //")
+	if len(splits) <= 1 {
+		return ""
+	}
+	return strings.TrimSpace(splits[len(splits)-1])
 }

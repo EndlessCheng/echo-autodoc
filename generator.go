@@ -11,6 +11,7 @@ import (
 	"github.com/labstack/echo"
 	"strings"
 	"time"
+	"runtime"
 )
 
 var timeType = reflect.TypeOf(time.Time{})
@@ -88,6 +89,19 @@ func (dg *docGenerator) Logger() echo.Logger                                    
 func (dg *docGenerator) Echo() *echo.Echo                                        { return nil }
 func (dg *docGenerator) Reset(r *http.Request, w http.ResponseWriter)            {}
 
+// 类型, 描述
+func (dg *docGenerator) parseTailComment(comment string, defaultType string) (type_ string, desc string) {
+	if comment == "" {
+		return "", ""
+	}
+	splits := strings.Split(comment, ",")
+	if len(splits) == 1 {
+		return defaultType, comment
+	}
+	return strings.TrimSpace(splits[0]), strings.TrimSpace(strings.Join(splits[1:], ","))
+}
+
+// 暂时不加 parseTailComment
 func (dg *docGenerator) Get(key string) interface{} {
 	if param, ok := customContextGetParams[key]; ok {
 		dg.currentAPI().addQueryParam(param)
@@ -97,26 +111,52 @@ func (dg *docGenerator) Get(key string) interface{} {
 }
 
 func (dg *docGenerator) QueryParam(name string) string {
-	param, ok := customQueryParams[name]
-	if !ok {
-		param = Param{"string", name, ""}
+	_, filePath, lineno, _ := runtime.Caller(1) // skip 的值取决于这行代码离要提取的注释相隔几层调用
+	comment := readTailComment(filePath, lineno)
+
+	if type_, desc := dg.parseTailComment(comment, "string"); desc != "" {
+		// 特殊大于全局
+		dg.currentAPI().addQueryParam(Param{type_, name, desc})
+	} else {
+		param, ok := customQueryParams[name]
+		if !ok {
+			param = Param{"string", name, ""}
+		}
+		dg.currentAPI().addQueryParam(param)
 	}
-	dg.currentAPI().addQueryParam(param)
 
 	return DefaultQueryParamReturn
 }
 
 func (dg *docGenerator) FormFile(name string) (*multipart.FileHeader, error) {
-	dg.currentAPI().addFormParam(Param{"file", name, DefaultFormFileDesc})
+	_, filePath, lineno, _ := runtime.Caller(1) // skip 的值取决于这行代码离要提取的注释相隔几层调用
+	comment := readTailComment(filePath, lineno)
+
+	var param Param
+	if type_, desc := dg.parseTailComment(comment, "file"); desc != "" {
+		param = Param{type_, name, desc}
+	} else {
+		param = Param{"file", name, DefaultFormFileDesc}
+	}
+	dg.currentAPI().addFormParam(param)
+
 	return &DefaultMultipartFileHeader, nil
 }
 
 func (dg *docGenerator) FormValue(name string) string {
-	param, ok := customFormParams[name]
-	if !ok {
-		param = Param{"string", name, ""}
+	_, filePath, lineno, _ := runtime.Caller(1) // skip 的值取决于这行代码离要提取的注释相隔几层调用
+	comment := readTailComment(filePath, lineno)
+
+	if type_, desc := dg.parseTailComment(comment, "string"); desc != "" {
+		// 特殊大于全局
+		dg.currentAPI().addFormParam(Param{type_, name, desc})
+	} else {
+		param, ok := customFormParams[name]
+		if !ok {
+			param = Param{"string", name, ""}
+		}
+		dg.currentAPI().addFormParam(param)
 	}
-	dg.currentAPI().addFormParam(param)
 
 	return DefaultFormValueReturn
 }

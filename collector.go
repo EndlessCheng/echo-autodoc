@@ -38,7 +38,6 @@ func getRealHandlerName(name string) string {
 }
 
 func (g *apiCollector) collect(r *echo.Route, h echo.HandlerFunc) {
-	// 提取注释
 	_, filePath, lineno, _ := runtime.Caller(2) // skip 的值取决于这行代码离要提取的注释相隔几层调用
 	comments := readAboveComments(filePath, lineno-1)
 

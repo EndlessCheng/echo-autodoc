@@ -2,6 +2,32 @@
 
 ## HTTP 接口
 
+### 上传一本书
+
+`POST /api/upload_book`
+
+表单参数
+
+|参数|描述|取值|
+|-------|--------|--------|
+|file|上传的文件|file|
+|file_name|文件名|string|
+|delta|偏移量|int|
+
+返回字段
+
+|参数|描述|取值|
+|-------|--------|--------|
+|content|上传的内容|string|
+
+返回示例：
+```json
+{
+	"content": "A"
+}
+```
+
+
 ### 获取一本书的信息
 
 `GET /api/book`
@@ -15,7 +41,7 @@ URL 参数
 
 |参数|描述|取值|
 |-------|--------|--------|
-|isbn|ISBN|string|
+|isbn|书的 ISBN|string|
 
 返回字段
 
@@ -62,14 +88,14 @@ URL 参数
 	"press": "The MIT Press",
 	"publish_date": "2009-07-31",
 	"price": 94,
-	"created_at": "2018-11-07 18:26:36"
+	"created_at": "2018-11-07 19:51:42"
 }
 ```
 
 
-### 添加一本书
+### 更新一本书的信息
 
-`POST /api/add_book`
+`GET /api/update_book`
 
 POST 时注意作者需要存到一个数组中
 
@@ -88,8 +114,17 @@ JSON 参数
 |price|定价|float|
 |created_at|创建时间|string|
 
-表单参数
+返回字段
 
 |参数|描述|取值|
 |-------|--------|--------|
-|file|上传的文件|file|
+|error_code|错误码|int|
+|error_msg|错误信息|string|
+
+返回示例：
+```json
+{
+	"error_code": 1000,
+	"error_msg": "OK"
+}
+```

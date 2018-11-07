@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"reflect"
 	"github.com/labstack/echo"
+	"strings"
 )
 
 // docGenerator 实现 echo.Context 接口，从而 hack 进业务逻辑代码（handler.go）中，详细见 collector.go
@@ -172,6 +173,20 @@ func parseStructWithPrefix(prefix string, structType reflect.Type) (params []Par
 	// 提取 struct 内部信息
 	for i := 0; i < structType.NumField(); i++ {
 		field := structType.Field(i)
+
+		jsonTag := field.Tag.Get("json")
+		if jsonTag == "-" {
+			continue
+		}
+		var name string
+		if jsonTag == "" {
+			// 不写 json tag 的话，就用属性类型代替
+			name = field.Name
+		} else {
+			name = strings.Split(jsonTag, ",")[0]
+		}
+		name = prefix + name
+
 		fieldType := dereference(field.Type)
 
 		type_ := typeToString(fieldType)
@@ -179,13 +194,6 @@ func parseStructWithPrefix(prefix string, structType reflect.Type) (params []Par
 		if fieldType.Name() == "Time" {
 			type_ = "string"
 		}
-
-		// 不写 json tag 的话，就用属性类型代替
-		name := field.Tag.Get("json")
-		if name == "" {
-			name = field.Name
-		}
-		name = prefix + name
 
 		desc := field.Tag.Get("desc")
 		params = append(params, Param{type_, name, desc})

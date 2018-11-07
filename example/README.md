@@ -30,6 +30,7 @@ URL 参数
 |press|出版社|string|
 |publish_date|出版日期|string|
 |price|定价|float|
+|created_at|创建时间|string|
 
 返回示例：
 ```json
@@ -60,7 +61,8 @@ URL 参数
 	],
 	"press": "The MIT Press",
 	"publish_date": "2009-07-31",
-	"price": 94
+	"price": 94,
+	"created_at": "2018-11-07 15:09:44"
 }
 ```
 
@@ -84,3 +86,4 @@ JSON 参数
 |press|出版社|string|
 |publish_date|出版日期|string|
 |price|定价|float|
+|created_at|创建时间|string|

@@ -89,16 +89,35 @@ func (dg *docGenerator) Logger() echo.Logger                                    
 func (dg *docGenerator) Echo() *echo.Echo                                        { return nil }
 func (dg *docGenerator) Reset(r *http.Request, w http.ResponseWriter)            {}
 
+// 显示在 README 中的类型
+var validTypes = [...]string{"int", "float", "string", "bool"}
+
+func (dg *docGenerator) isValidType(type_ string) bool {
+	for _, t := range validTypes {
+		if t == type_ {
+			return true
+		}
+	}
+	return false
+}
+
 // 类型, 描述
 func (dg *docGenerator) parseTailComment(comment string, defaultType string) (type_ string, desc string) {
 	if comment == "" {
 		return "", ""
 	}
+
 	splits := strings.Split(comment, ",")
 	if len(splits) == 1 {
 		return defaultType, comment
 	}
-	return strings.TrimSpace(splits[0]), strings.TrimSpace(strings.Join(splits[1:], ","))
+
+	type_ = strings.TrimSpace(splits[0])
+	if !dg.isValidType(type_) {
+		return defaultType, comment
+	}
+
+	return type_, strings.TrimSpace(strings.Join(splits[1:], ","))
 }
 
 // 暂时不加 parseTailComment

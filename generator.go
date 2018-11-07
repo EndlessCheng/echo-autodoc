@@ -108,7 +108,7 @@ func (dg *docGenerator) QueryParam(name string) string {
 
 func (dg *docGenerator) FormFile(name string) (*multipart.FileHeader, error) {
 	dg.currentAPI().addFormParam(Param{"file", name, DefaultFormFileDesc})
-	return nil, nil
+	return &DefaultMultipartFileHeader, nil
 }
 
 func (dg *docGenerator) FormValue(name string) string {

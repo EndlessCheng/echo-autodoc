@@ -1,5 +1,11 @@
 package autodoc
 
+import (
+	"mime/multipart"
+	"reflect"
+	"unsafe"
+)
+
 var (
 	SkipGen = "[skip gen]"
 
@@ -11,7 +17,13 @@ var (
 	DefaultQueryParamReturn             = "1"
 	DefaultFormValueReturn              = ""
 	DefaultFormFileDesc                 = "上传的文件"
+
+	DefaultMultipartFileHeader = multipart.FileHeader{Filename: "example.txt", Size: 1}
 )
+
+func init() {
+	ModifyFileHeaderContent(&DefaultMultipartFileHeader, []byte("A"))
+}
 
 var (
 	customContextGetParams    = map[string]Param{}
@@ -65,4 +77,10 @@ func SetIgnoredResponseJSONParams(params ...Param) {
 	for _, p := range params {
 		ignoredResponseJSONParams[p.Name] = p
 	}
+}
+
+func ModifyFileHeaderContent(fh *multipart.FileHeader, content []byte) {
+	fhVal := reflect.Indirect(reflect.ValueOf(fh))
+	ptrToContent := (*[]byte)(unsafe.Pointer(fhVal.FieldByName("content").UnsafeAddr()))
+	*ptrToContent = content
 }

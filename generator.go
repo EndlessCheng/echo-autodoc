@@ -159,16 +159,17 @@ func getType(i interface{}) string {
 	return typeToString(reflect.TypeOf(i))
 }
 
-func _parseStruct(prefix string, structType reflect.Type) []Param {
-	var params []Param
-
+// struct / struct 指针 / struct slice
+func parseStructWithPrefix(prefix string, structType reflect.Type) (params []Param) {
 	if structType.Kind() == reflect.Ptr || structType.Kind() == reflect.Slice {
+		// array 信息已经在上层提取出来了，这里我们只需要内部的信息
 		structType = structType.Elem()
 	}
 	if structType.Kind() != reflect.Struct {
 		return params
 	}
 
+	// 提取 struct 内部信息
 	for i := 0; i < structType.NumField(); i++ {
 		field := structType.Field(i)
 		fieldType := dereference(field.Type)
@@ -191,11 +192,11 @@ func _parseStruct(prefix string, structType reflect.Type) []Param {
 
 		// skip time.Time
 		if fieldType.Name() != "Time" {
-			switch field.Type.Kind() {
+			switch fieldType.Kind() {
 			case reflect.Slice,
 				reflect.Ptr,
 				reflect.Struct:
-				params = append(params, _parseStruct(name+".", field.Type)...)
+				params = append(params, parseStructWithPrefix(name+".", field.Type)...)
 			}
 		}
 	}
@@ -203,8 +204,36 @@ func _parseStruct(prefix string, structType reflect.Type) []Param {
 	return params
 }
 
+// struct 或 struct 指针
 func parseStruct(structType reflect.Type) []Param {
-	return _parseStruct("", structType)
+	return parseStructWithPrefix("", structType)
+}
+
+func parseMap(mp map[string]interface{}) (params []Param) {
+	for name, val := range mp {
+		valType := reflect.TypeOf(val)
+		valType = dereference(valType)
+
+		type_ := typeToString(valType)
+		// time.Time 固定成 string
+		if valType.Name() == "Time" {
+			type_ = "string"
+		}
+
+		params = append(params, Param{type_, name, ""})
+
+		// skip time.Time
+		if valType.Name() != "Time" {
+			switch valType.Kind() {
+			case reflect.Slice,
+				reflect.Ptr,
+				reflect.Struct:
+				params = append(params, parseStructWithPrefix(name+".", valType)...)
+			}
+		}
+	}
+
+	return params
 }
 
 func (dg *docGenerator) Bind(i interface{}) error {
@@ -231,35 +260,24 @@ func (dg *docGenerator) JSON(code int, i interface{}) error {
 	}
 	dg.currentAPI().responseExampleJSON = string(data)
 
+	// TODO: 合并
+	var params []Param
 	switch val := i.(type) {
 	case map[string]interface{}:
-		for name, v := range val {
-			switch _val := v.(type) {
-			case map[string]interface{}:
-				for _name, _v := range _val {
-					p := Param{getType(_v), _name, ""}
-					if customParam, ok := customResponseJSONParams[_name]; ok {
-						p = customParam
-					}
-					dg.currentAPI().addResponseParam(p)
-				}
-			default:
-				p := Param{getType(v), name, ""}
-				if customParam, ok := customResponseJSONParams[name]; ok {
-					p = customParam
-				}
-				dg.currentAPI().addResponseParam(p)
-			}
-		}
+		params = parseMap(val)
 	default:
 		// 否则是个 struct 或 struct 指针
-		params := parseStruct(reflect.TypeOf(val))
-		for _, p := range params {
-			if customParam, ok := customResponseJSONParams[p.Name]; ok {
-				p = customParam
-			}
-			dg.currentAPI().addResponseParam(p)
+		params = parseStruct(reflect.TypeOf(val))
+	}
+
+	for _, p := range params {
+		if _, ok := ignoredResponseJSONParams[p.Name]; ok {
+			continue
 		}
+		if customParam, ok := customResponseJSONParams[p.Name]; ok {
+			p = customParam
+		}
+		dg.currentAPI().addResponseParam(p)
 	}
 
 	return nil

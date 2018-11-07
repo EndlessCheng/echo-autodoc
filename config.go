@@ -14,11 +14,13 @@ var (
 )
 
 var (
-	customContextGetParams   = map[string]Param{}
-	customQueryParams        = map[string]Param{}
-	customFormParams         = map[string]Param{}
-	customPostJSONParams     = map[string]Param{}
-	customResponseJSONParams = map[string]Param{}
+	customContextGetParams    = map[string]Param{}
+	customQueryParams         = map[string]Param{}
+	customFormParams          = map[string]Param{}
+	customPostJSONParams      = map[string]Param{}
+	customResponseJSONParams  = map[string]Param{}
+	globalResponseJSONParams  []Param
+	ignoredResponseJSONParams = map[string]Param{}
 )
 
 func SetContextGetParams(params ...Param) {
@@ -48,5 +50,19 @@ func SetPostJSONParams(params ...Param) {
 func SetResponseJSONParams(params ...Param) {
 	for _, p := range params {
 		customResponseJSONParams[p.Name] = p
+	}
+}
+
+// 同时会设置 ignoredResponseJSONParams
+func SetGloablResponseJSONParams(params ...Param) {
+	globalResponseJSONParams = params
+	for _, p := range params {
+		ignoredResponseJSONParams[p.Name] = p
+	}
+}
+
+func SetIgnoredResponseJSONParams(params ...Param) {
+	for _, p := range params {
+		ignoredResponseJSONParams[p.Name] = p
 	}
 }

@@ -62,7 +62,7 @@ URL 参数
 	"press": "The MIT Press",
 	"publish_date": "2009-07-31",
 	"price": 94,
-	"created_at": "2018-11-07 15:09:44"
+	"created_at": "2018-11-07 18:26:36"
 }
 ```
 
@@ -87,3 +87,9 @@ JSON 参数
 |publish_date|出版日期|string|
 |price|定价|float|
 |created_at|创建时间|string|
+
+表单参数
+
+|参数|描述|取值|
+|-------|--------|--------|
+|file|上传的文件|file|

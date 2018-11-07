@@ -18,11 +18,12 @@ var (
 	DefaultFormValueReturn              = ""
 	DefaultFormFileDesc                 = "上传的文件"
 
-	DefaultMultipartFileHeader = multipart.FileHeader{Filename: "example.txt", Size: 1}
+	DefaultMultipartFileHeader        = multipart.FileHeader{Filename: "example.txt", Size: 1}
+	DefaultMultipartFileHeaderContent = []byte("A")
 )
 
 func init() {
-	ModifyFileHeaderContent(&DefaultMultipartFileHeader, []byte("A"))
+	ModifyFileHeaderContent(&DefaultMultipartFileHeader, DefaultMultipartFileHeaderContent)
 }
 
 var (

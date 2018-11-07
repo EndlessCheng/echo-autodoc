@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo"
 	"net/http"
 	"time"
+	"io/ioutil"
 )
 
 // This is the example.
@@ -52,5 +53,23 @@ func (h *handler) addBook(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	return c.NoContent(http.StatusOK)
+	fh, err := c.FormFile("file")
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+
+	f, err := fh.Open()
+	if err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	defer f.Close()
+
+	content, err := ioutil.ReadAll(f)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	//fmt.Println(string(content))
+
+	return c.String(http.StatusOK, string(content))
 }

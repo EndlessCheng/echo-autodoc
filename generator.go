@@ -10,7 +10,10 @@ import (
 	"reflect"
 	"github.com/labstack/echo"
 	"strings"
+	"time"
 )
+
+var timeType = reflect.TypeOf(time.Time{})
 
 // docGenerator 实现 echo.Context 接口，从而 hack 进业务逻辑代码（handler.go）中，详细见 collector.go
 type docGenerator struct {
@@ -188,10 +191,11 @@ func parseStructWithPrefix(prefix string, structType reflect.Type) (params []Par
 		name = prefix + name
 
 		fieldType := dereference(field.Type)
+		isTimeType := fieldType.ConvertibleTo(timeType)
 
 		type_ := typeToString(fieldType)
 		// time.Time 固定成 string
-		if fieldType.Name() == "Time" {
+		if isTimeType {
 			type_ = "string"
 		}
 
@@ -199,7 +203,7 @@ func parseStructWithPrefix(prefix string, structType reflect.Type) (params []Par
 		params = append(params, Param{type_, name, desc})
 
 		// skip time.Time
-		if fieldType.Name() != "Time" {
+		if !isTimeType {
 			switch fieldType.Kind() {
 			case reflect.Slice,
 				reflect.Ptr,

@@ -55,7 +55,7 @@ func SetResponseJSONParams(params ...Param) {
 
 // 同时会设置 ignoredResponseJSONParams
 func SetGloablResponseJSONParams(params ...Param) {
-	globalResponseJSONParams = params
+	globalResponseJSONParams = append(globalResponseJSONParams, params...)
 	for _, p := range params {
 		ignoredResponseJSONParams[p.Name] = p
 	}

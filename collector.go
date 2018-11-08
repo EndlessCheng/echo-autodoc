@@ -42,10 +42,8 @@ func (g *apiCollector) collect(r *echo.Route, h echo.HandlerFunc) {
 	comments := readAboveComments(filePath, lineno-1)
 
 	// 如果任意一行包含 [skip gen] 则忽略
-	for _, c := range comments {
-		if c == SkipGen {
-			return
-		}
+	if in(SkipGen, comments) {
+		return
 	}
 
 	docGen.add(getRealHandlerName(r.Name), r.Method, r.Path)

@@ -77,3 +77,12 @@ func FillEmptyValuesOfStruct(structVal reflect.Value, intVal int64, uintVal uint
 		}
 	}
 }
+
+func in(s string, ss []string) bool {
+	for _, _s := range ss {
+		if _s == s {
+			return true
+		}
+	}
+	return false
+}

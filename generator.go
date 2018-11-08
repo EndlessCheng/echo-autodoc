@@ -187,11 +187,11 @@ func dereference(v reflect.Type) reflect.Type {
 	return v
 }
 
-func typeToString(v reflect.Type) string {
-	v = dereference(v)
+func typeToString(val reflect.Type) string {
+	v := dereference(val)
 	switch v.Kind() {
 	case reflect.Invalid:
-		panic("[typeToString] 代码有误！")
+		panic("[typeToString] 暂不支持 " + val.Name())
 	case reflect.Bool:
 		return "bool"
 	case reflect.Int,
@@ -325,6 +325,29 @@ func (dg *docGenerator) JSON(code int, i interface{}) error {
 		// TODO: ignore?
 	}
 
+	if FillZeroValue {
+		// TODO
+		//switch val := i.(type) {
+		//case map[string]interface{}:
+		//	for _, _val := range val {
+		//		valType := reflect.TypeOf(_val)
+		//		// TODO: map中的，不是指针能修改吗？
+		//		if valType.Kind() == reflect.Struct {
+		//			FillStruct(&_val)
+		//		} else if valType.Kind() == reflect.Ptr && valType.Elem().Kind() == reflect.Struct {
+		//			FillStruct(_val)
+		//		}
+		//	}
+		//default:
+		//	// 否则是个 struct 或 struct 指针
+		//	valType := reflect.TypeOf(i)
+		//	if valType.Kind() == reflect.Struct {
+		//		FillStruct(&i)
+		//	} else if valType.Kind() == reflect.Ptr && valType.Elem().Kind() == reflect.Struct {
+		//		FillStruct(i)
+		//	}
+		//}
+	}
 	data, err := json.MarshalIndent(i, "", "\t")
 	if err != nil {
 		panic(err)

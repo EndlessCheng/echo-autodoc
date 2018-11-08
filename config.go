@@ -7,6 +7,9 @@ import (
 )
 
 var (
+	// c.JSON 时，若传入的数据有零值，可以将其递归地填充为非零值（数值填充成 1，字符串填充成 "1"，布尔值依然为 false）
+	FillZeroValue = false
+
 	SkipGen = "[skip gen]"
 
 	DefaultMarkdownHeader = `# 接口文档

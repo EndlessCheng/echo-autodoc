@@ -1,6 +1,14 @@
 package autodoc
 
-import "reflect"
+import (
+	"reflect"
+	"time"
+)
+
+var (
+	DefaultTime = time.Date(2010, 11, 22, 15, 16, 17, 0, time.Local)
+	timeVal     = reflect.ValueOf(DefaultTime)
+)
 
 // 只能修改 public 字段，structPtr 不是 struct 指针时无效
 func FillStruct(structPtr interface{}) {
@@ -18,9 +26,19 @@ func FillEmptyValuesOfStruct(structVal reflect.Value, intVal int64, uintVal uint
 
 	for i := 0; i < structVal.NumField(); i++ {
 		structField := structVal.Field(i)
+		structType := structField.Type()
+
+		// 单独处理 time.Time
+		if structType.ConvertibleTo(timeType) {
+			if structField.CanSet() {
+				structField.Set(timeVal.Convert(structType))
+			}
+			continue
+		}
+
 		switch structField.Kind() {
 		case reflect.Invalid:
-			panic("[FillEmptyValuesOfStruct] 暂不支持 " + structField.Type().Name())
+			panic("[FillEmptyValuesOfStruct] 暂不支持 " + structType.Name())
 		case reflect.Bool:
 			// ignore
 		case reflect.Int,

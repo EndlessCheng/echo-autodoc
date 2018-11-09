@@ -59,7 +59,6 @@ func (dg *docGenerator) QueryParams() url.Values                                
 func (dg *docGenerator) QueryString() string                                     { return "" }
 func (dg *docGenerator) FormParams() (url.Values, error)                         { return nil, nil }
 func (dg *docGenerator) MultipartForm() (*multipart.Form, error)                 { return nil, nil }
-func (dg *docGenerator) Cookie(name string) (*http.Cookie, error)                { return nil, nil }
 func (dg *docGenerator) SetCookie(cookie *http.Cookie)                           {}
 func (dg *docGenerator) Cookies() []*http.Cookie                                 { return nil }
 func (dg *docGenerator) Set(key string, val interface{})                         {}
@@ -88,6 +87,10 @@ func (dg *docGenerator) SetHandler(h echo.HandlerFunc)                          
 func (dg *docGenerator) Logger() echo.Logger                                     { return nil }
 func (dg *docGenerator) Echo() *echo.Echo                                        { return nil }
 func (dg *docGenerator) Reset(r *http.Request, w http.ResponseWriter)            {}
+
+func (dg *docGenerator) Cookie(name string) (*http.Cookie, error) {
+	return &DefaultCookie, nil
+}
 
 // 显示在 README 中的类型
 var validTypes = [...]string{"int", "float", "string", "bool"}

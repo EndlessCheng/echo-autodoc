@@ -4,6 +4,7 @@ import (
 	"mime/multipart"
 	"reflect"
 	"unsafe"
+	"net/http"
 )
 
 var (
@@ -16,6 +17,8 @@ var (
 
 ## HTTP 接口`
 	DefaultMarkdownFooter = ""
+
+	DefaultCookie = http.Cookie{}
 
 	DefaultGetReturn        interface{} = 1
 	DefaultQueryParamReturn             = "1"

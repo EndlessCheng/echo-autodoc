@@ -7,6 +7,8 @@ import (
 
 func Test_readTailComment(t *testing.T) {
 	assert.Equal(t, "aa", _readTailComment(")// aa"))
+	assert.Equal(t, "aa", _readTailComment("))// aa"))
+	assert.Equal(t, "/ aa", _readTailComment(")/// aa"))
 	assert.Equal(t, "aa", _readTailComment(")//aa"))
 	assert.Equal(t, "aa", _readTailComment(") // aa"))
 	assert.Equal(t, "aa", _readTailComment(")    // aa"))

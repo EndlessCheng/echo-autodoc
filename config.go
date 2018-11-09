@@ -18,7 +18,7 @@ var (
 ## HTTP 接口`
 	DefaultMarkdownFooter = ""
 
-	DefaultCookie = http.Cookie{}
+	DefaultCookie = http.Cookie{Value: "1"}
 
 	DefaultGetReturn        interface{} = 1
 	DefaultQueryParamReturn             = "1"

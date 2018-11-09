@@ -3,6 +3,7 @@ package autodoc
 import (
 	"io/ioutil"
 	"strings"
+	"regexp"
 )
 
 var fileCache = map[string][]string{}
@@ -39,13 +40,20 @@ func readAboveComments(filePath string, lineno int) (comments []string) {
 	return comments
 }
 
-// 读取调用处尾部的注释
-// 简单起见，只读取最后一个 ) // 之后的内容
-func readTailComment(filePath string, lineno int) (comment string) {
-	line := readLine(filePath, lineno)
-	splits := strings.Split(line, ") //")
-	if len(splits) <= 1 {
+var commentRegex, _ = regexp.Compile(`\) *//`)
+
+func _readTailComment(s string) (comment string) {
+	// 第一个匹配的结果
+	idx := commentRegex.FindStringIndex(s)
+	if idx == nil {
 		return ""
 	}
-	return strings.TrimSpace(splits[len(splits)-1])
+	return strings.TrimSpace(s[idx[1]:])
+}
+
+// 读取调用处尾部的注释
+// 简单起见，只读取第一个 ) // 之后的内容（右括号和 // 之间有若干空格）
+func readTailComment(filePath string, lineno int) (comment string) {
+	line := readLine(filePath, lineno)
+	return _readTailComment(line)
 }

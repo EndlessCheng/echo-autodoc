@@ -33,6 +33,34 @@ func init() {
 	ModifyFileHeaderContent(&DefaultMultipartFileHeader, DefaultMultipartFileHeaderContent)
 }
 
+func ModifyFileHeaderContent(fh *multipart.FileHeader, content []byte) {
+	fhVal := reflect.Indirect(reflect.ValueOf(fh))
+	ptrToContent := (*[]byte)(unsafe.Pointer(fhVal.FieldByName("content").UnsafeAddr()))
+	*ptrToContent = content
+}
+
+//
+
+var (
+	customGetReturnMap        = map[string]interface{}{}
+	customQueryParamReturnMap = map[string]string{}
+	customFormValueReturnMap  = map[string]string{}
+)
+
+func AddCustomGetReturn(key string, ret interface{}) {
+	customGetReturnMap[key] = ret
+}
+
+func AddCustomQueryParamReturn(name string, ret string) {
+	customQueryParamReturnMap[name] = ret
+}
+
+func AddCustomFormValueReturn(name string, ret string) {
+	customFormValueReturnMap[name] = ret
+}
+
+//
+
 var (
 	customContextGetParams    = map[string]Param{}
 	customQueryParams         = map[string]Param{}
@@ -85,10 +113,4 @@ func SetIgnoredResponseJSONParams(params ...Param) {
 	for _, p := range params {
 		ignoredResponseJSONParams[p.Name] = p
 	}
-}
-
-func ModifyFileHeaderContent(fh *multipart.FileHeader, content []byte) {
-	fhVal := reflect.Indirect(reflect.ValueOf(fh))
-	ptrToContent := (*[]byte)(unsafe.Pointer(fhVal.FieldByName("content").UnsafeAddr()))
-	*ptrToContent = content
 }

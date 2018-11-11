@@ -129,6 +129,9 @@ func (dg *docGenerator) Get(key string) interface{} {
 		dg.currentAPI().addQueryParam(param)
 	}
 
+	if ret, ok := customGetReturnMap[key]; ok {
+		return ret
+	}
 	return DefaultGetReturn
 }
 
@@ -147,6 +150,9 @@ func (dg *docGenerator) QueryParam(name string) string {
 		dg.currentAPI().addQueryParam(param)
 	}
 
+	if ret, ok := customQueryParamReturnMap[name]; ok {
+		return ret
+	}
 	return DefaultQueryParamReturn
 }
 
@@ -180,6 +186,9 @@ func (dg *docGenerator) FormValue(name string) string {
 		dg.currentAPI().addFormParam(param)
 	}
 
+	if ret, ok := customFormValueReturnMap[name]; ok {
+		return ret
+	}
 	return DefaultFormValueReturn
 }
 

@@ -346,6 +346,9 @@ func (dg *docGenerator) Bind(i interface{}) error {
 }
 
 func (dg *docGenerator) JSON(code int, i interface{}) error {
+	defer ContextJSONer.AfterJSON()
+	ContextJSONer.BeforeJSON()
+	
 	if WarningWhenNotStatusOK && code != http.StatusOK {
 		log.Warnf("[c.JSON] code is %d", code)
 	}

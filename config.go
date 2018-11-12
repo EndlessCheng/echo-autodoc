@@ -119,3 +119,21 @@ func SetIgnoredResponseJSONParams(params ...Param) {
 		ignoredResponseJSONParams[p.Name] = p
 	}
 }
+
+//
+
+type ContextJSON interface {
+	BeforeJSON()
+	AfterJSON()
+}
+
+var (
+	ContextJSONer ContextJSON = emptyContextJSONer
+)
+
+type emptyContextJSON struct{}
+
+var emptyContextJSONer = &emptyContextJSON{}
+
+func (*emptyContextJSON) BeforeJSON() {}
+func (*emptyContextJSON) AfterJSON()  {}

@@ -17,8 +17,11 @@ var (
 
 	SkipGen = "[skip gen]"
 
-	// 当返回值不为 200 时，打印一条 warning 信息
+	// 当返回值不为 200 时，打印 warning 信息
 	WarningWhenNotStatusOK = true
+
+	// 字段缺少描述时打印 warning 信息
+	WarningMissingFields = true
 )
 
 // Markdown 相关配置
@@ -131,7 +134,7 @@ type ContextJSON interface {
 }
 
 var (
-	ContextJSONer ContextJSON = EmptyContextJSONer
+	ContextJSONer ContextJSON = ErrorCodeContextJSONer
 )
 
 var (
@@ -164,7 +167,7 @@ func (cj *errorCodeContextJSON) BeforeJSON(code int, i interface{}) {
 			return
 		}
 		if d.ErrCode == "" {
-			log.Errorln("[c.JSON.BeforeJSON] 未找到 errcode")
+			//log.Errorln("[c.JSON.BeforeJSON] 未找到 errcode")
 			return
 		}
 

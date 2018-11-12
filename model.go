@@ -3,6 +3,7 @@ package autodoc
 import (
 	"fmt"
 	"strings"
+	log "github.com/sirupsen/logrus"
 )
 
 type Param struct {
@@ -96,4 +97,30 @@ func (a *api) String() string {
 	}
 
 	return sb.String()
+}
+
+func (a *api) warnMissingFields() {
+	for _, p := range a.queryParams {
+		if p.Desc == "" {
+			log.Warnf("[%s %s] 缺少 URL 参数描述 - %s", a.method, a.path, p.Name)
+		}
+	}
+
+	for _, p := range a.jsonParams {
+		if p.Desc == "" {
+			log.Warnf("[%s %s] 缺少 JSON 参数描述 - %s", a.method, a.path, p.Name)
+		}
+	}
+
+	for _, p := range a.formParams {
+		if p.Desc == "" {
+			log.Warnf("[%s %s] 缺少表单参数描述 - %s", a.method, a.path, p.Name)
+		}
+	}
+
+	for _, p := range a.responseParams {
+		if p.Desc == "" {
+			log.Warnf("[%s %s] 缺少返回字段描述 - %s", a.method, a.path, p.Name)
+		}
+	}
 }

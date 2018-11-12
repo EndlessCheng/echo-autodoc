@@ -36,6 +36,9 @@ func (dg *docGenerator) generateMarkdown() string {
 	sb := stringBuilder{}
 	sb.WriteString(DefaultMarkdownHeader)
 	for _, api := range dg.apiList {
+		if WarningMissingFields {
+			api.warnMissingFields()
+		}
 		sb.WriteString(fmt.Sprintf("\n%s", api.String()))
 	}
 	sb.WriteString(DefaultMarkdownFooter)

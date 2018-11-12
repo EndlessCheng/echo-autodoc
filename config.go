@@ -5,6 +5,9 @@ import (
 	"reflect"
 	"unsafe"
 	"net/http"
+	"encoding/json"
+	log "github.com/sirupsen/logrus"
+	"strconv"
 )
 
 // 杂项配置
@@ -123,17 +126,58 @@ func SetIgnoredResponseJSONParams(params ...Param) {
 //
 
 type ContextJSON interface {
-	BeforeJSON()
-	AfterJSON()
+	BeforeJSON(code int, i interface{})
+	AfterJSON(code int, i interface{})
 }
 
 var (
-	ContextJSONer ContextJSON = emptyContextJSONer
+	ContextJSONer ContextJSON = EmptyContextJSONer
+)
+
+var (
+	DefaultErrorCodeOK = 1000
+
+	EmptyContextJSONer     = &emptyContextJSON{}
+	ErrorCodeContextJSONer = &errorCodeContextJSON{DefaultErrorCodeOK}
 )
 
 type emptyContextJSON struct{}
 
-var emptyContextJSONer = &emptyContextJSON{}
+func (*emptyContextJSON) BeforeJSON(code int, i interface{}) {}
+func (*emptyContextJSON) AfterJSON(code int, i interface{})  {}
 
-func (*emptyContextJSON) BeforeJSON() {}
-func (*emptyContextJSON) AfterJSON()  {}
+type errorCodeContextJSON struct {
+	errorCodeOK int
+}
+
+func (cj *errorCodeContextJSON) BeforeJSON(code int, i interface{}) {
+	if code == http.StatusOK {
+		data, err := json.Marshal(i)
+		if err != nil {
+			return
+		}
+
+		d := struct {
+			// 方便识别空数据，同时兼容旧版本 Golang
+			ErrCode string `json:"errcode"`
+		}{}
+		if err := json.Unmarshal(data, &d); err != nil {
+			log.WithError(err).Errorln("[c.JSON.BeforeJSON.json.Unmarshal]")
+			return
+		}
+		if d.ErrCode == "" {
+			log.Errorln("[c.JSON.BeforeJSON] 未找到 errcode")
+			return
+		}
+
+		errCode, err := strconv.Atoi(d.ErrCode)
+		if err != nil {
+			return
+		}
+
+		if errCode != cj.errorCodeOK {
+			log.WithError(err).Errorf("[c.JSON.BeforeJSON] errCode != cj.errorCodeOK (%d != %d)", errCode, cj.errorCodeOK)
+		}
+	}
+}
+func (*errorCodeContextJSON) AfterJSON(code int, i interface{}) {}

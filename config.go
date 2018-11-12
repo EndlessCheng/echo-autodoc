@@ -135,10 +135,8 @@ var (
 )
 
 var (
-	DefaultErrorCodeOK = 1000
-
 	EmptyContextJSONer     = &emptyContextJSON{}
-	ErrorCodeContextJSONer = &errorCodeContextJSON{DefaultErrorCodeOK}
+	ErrorCodeContextJSONer = &errorCodeContextJSON{1000}
 )
 
 type emptyContextJSON struct{}

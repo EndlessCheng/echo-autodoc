@@ -145,7 +145,7 @@ func (dg *docGenerator) Get(key string) interface{} {
 		dg.currentAPI().addQueryParam(param)
 	}
 
-	if ret, ok := customGetReturnMap[key]; ok {
+	if ret, ok := customContextGetReturnMap[key]; ok {
 		return ret
 	}
 	return DefaultGetReturn

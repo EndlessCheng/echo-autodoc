@@ -30,6 +30,8 @@ var (
 
 ## HTTP 接口`
 	DefaultMarkdownFooter = ""
+
+	DefaultFormFileDesc = "上传的文件"
 )
 
 // 默认 echo 操作返回值
@@ -40,7 +42,7 @@ var (
 	DefaultGetReturn        interface{} = 1
 	DefaultQueryParamReturn             = "1"
 	DefaultFormValueReturn              = "1"
-	DefaultFormFileDesc                 = "上传的文件"
+	// TODO: DefaultPostJSONFieldValue   interface{} = "1"
 
 	DefaultMultipartFileHeader        = multipart.FileHeader{Filename: "example.txt", Size: 1}
 	DefaultMultipartFileHeaderContent = []byte("A")
@@ -58,13 +60,17 @@ func ModifyFileHeaderContent(fh *multipart.FileHeader, content []byte) {
 
 // 精确设置 echo 操作返回值
 var (
-	customGetReturnMap        = map[string]interface{}{}
-	customQueryParamReturnMap = map[string]string{}
-	customFormValueReturnMap  = map[string]string{}
+	customContextGetReturnMap   = map[string]interface{}{}
+	customQueryParamReturnMap   = map[string]string{}
+	customFormValueReturnMap    = map[string]string{}
+	// TODO: customPostJSONFieldValueMap = map[string]interface{}{}
 )
 
 func AddCustomGetReturn(key string, ret interface{}) {
-	customGetReturnMap[key] = ret
+	customContextGetReturnMap[key] = ret
+}
+func AddCustomContextGetReturn(key string, ret interface{}) {
+	customContextGetReturnMap[key] = ret
 }
 func AddCustomQueryParamReturn(name string, str string) {
 	customQueryParamReturnMap[name] = str

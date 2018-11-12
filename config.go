@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
-	"strconv"
+	"strings"
 )
 
 // 杂项配置
@@ -158,26 +158,21 @@ func (cj *errorCodeContextJSON) BeforeJSON(code int, i interface{}) {
 			return
 		}
 
+		if !strings.Contains(string(data), `"errcode"`) {
+			// log.Warn()
+			return
+		}
+
 		d := struct {
-			// 方便识别空数据，同时兼容旧版本 Golang
-			ErrCode string `json:"errcode"`
+			ErrCode int `json:"errcode"`
 		}{}
 		if err := json.Unmarshal(data, &d); err != nil {
 			log.WithError(err).Errorln("[c.JSON.BeforeJSON.json.Unmarshal]")
 			return
 		}
-		if d.ErrCode == "" {
-			//log.Errorln("[c.JSON.BeforeJSON] 未找到 errcode")
-			return
-		}
 
-		errCode, err := strconv.Atoi(d.ErrCode)
-		if err != nil {
-			return
-		}
-
-		if errCode != cj.errorCodeOK {
-			log.WithError(err).Errorf("[c.JSON.BeforeJSON] errCode != cj.errorCodeOK (%d != %d)", errCode, cj.errorCodeOK)
+		if d.ErrCode != cj.errorCodeOK {
+			log.WithError(err).Errorf("[c.JSON.BeforeJSON] d.ErrCode != cj.errorCodeOK (%d != %d)", d.ErrCode, cj.errorCodeOK)
 		}
 	}
 }

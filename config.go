@@ -7,17 +7,28 @@ import (
 	"net/http"
 )
 
+// 杂项配置
 var (
 	// c.JSON 时，若传入的数据有零值，可以将其递归地填充为非零值（数值填充成 1，字符串填充成 "1"，布尔值依然为 false）
 	FillZeroValue = false
 
 	SkipGen = "[skip gen]"
 
+	// 当返回值不为 200 时，打印一条 warning 信息
+	WarningWhenNotStatusOK = true
+)
+
+// Markdown 相关配置
+var (
 	DefaultMarkdownHeader = `# 接口文档
 
 ## HTTP 接口`
 	DefaultMarkdownFooter = ""
+)
 
+// 默认 echo 操作返回值
+// 若要精确设置，见下方的 AddCustomGetReturn 等
+var (
 	DefaultCookie = http.Cookie{Value: "1"}
 
 	DefaultGetReturn        interface{} = 1
@@ -39,8 +50,7 @@ func ModifyFileHeaderContent(fh *multipart.FileHeader, content []byte) {
 	*ptrToContent = content
 }
 
-//
-
+// 精确设置 echo 操作返回值
 var (
 	customGetReturnMap        = map[string]interface{}{}
 	customQueryParamReturnMap = map[string]string{}
@@ -50,17 +60,14 @@ var (
 func AddCustomGetReturn(key string, ret interface{}) {
 	customGetReturnMap[key] = ret
 }
-
-func AddCustomQueryParamReturn(name string, ret string) {
-	customQueryParamReturnMap[name] = ret
+func AddCustomQueryParamReturn(name string, str string) {
+	customQueryParamReturnMap[name] = str
+}
+func AddCustomFormValueReturn(name string, str string) {
+	customFormValueReturnMap[name] = str
 }
 
-func AddCustomFormValueReturn(name string, ret string) {
-	customFormValueReturnMap[name] = ret
-}
-
-//
-
+// 解析参数时，若没有相关注释，使用下面的值（一般用于常见的入参出参）
 var (
 	customContextGetParams    = map[string]Param{}
 	customQueryParams         = map[string]Param{}
@@ -76,31 +83,28 @@ func SetContextGetParams(params ...Param) {
 		customContextGetParams[p.Name] = p
 	}
 }
-
 func SetQueryParams(params ...Param) {
 	for _, p := range params {
 		customQueryParams[p.Name] = p
 	}
 }
-
 func SetFormParams(params ...Param) {
 	for _, p := range params {
 		customFormParams[p.Name] = p
 	}
 }
-
 func SetPostJSONParams(params ...Param) {
 	for _, p := range params {
 		customPostJSONParams[p.Name] = p
 	}
 }
-
 func SetResponseJSONParams(params ...Param) {
 	for _, p := range params {
 		customResponseJSONParams[p.Name] = p
 	}
 }
 
+// globalResponseJSONParams 为所有返回的 JSON 都会有的字段
 // 同时会设置 ignoredResponseJSONParams
 func SetGloablResponseJSONParams(params ...Param) {
 	globalResponseJSONParams = append(globalResponseJSONParams, params...)
@@ -109,6 +113,7 @@ func SetGloablResponseJSONParams(params ...Param) {
 	}
 }
 
+// 解析返回的 JSON 时，忽略这些字段
 func SetIgnoredResponseJSONParams(params ...Param) {
 	for _, p := range params {
 		ignoredResponseJSONParams[p.Name] = p

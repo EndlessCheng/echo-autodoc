@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 	"runtime"
+	log "github.com/sirupsen/logrus"
 )
 
 var timeType = reflect.TypeOf(time.Time{})
@@ -66,7 +67,6 @@ func (dg *docGenerator) Validate(i interface{}) error                           
 func (dg *docGenerator) Render(code int, name string, data interface{}) error    { return nil }
 func (dg *docGenerator) HTML(code int, html string) error                        { return nil }
 func (dg *docGenerator) HTMLBlob(code int, b []byte) error                       { return nil }
-func (dg *docGenerator) String(code int, s string) error                         { return nil }
 func (dg *docGenerator) JSONPretty(code int, i interface{}, indent string) error { return nil }
 func (dg *docGenerator) JSONBlob(code int, b []byte) error                       { return nil }
 func (dg *docGenerator) JSONP(code int, callback string, i interface{}) error    { return nil }
@@ -79,7 +79,6 @@ func (dg *docGenerator) Stream(code int, contentType string, r io.Reader) error 
 func (dg *docGenerator) File(file string) error                                  { return nil }
 func (dg *docGenerator) Attachment(file string, name string) error               { return nil }
 func (dg *docGenerator) Inline(file string, name string) error                   { return nil }
-func (dg *docGenerator) NoContent(code int) error                                { return nil }
 func (dg *docGenerator) Redirect(code int, url string) error                     { return nil }
 func (dg *docGenerator) Error(err error)                                         {}
 func (dg *docGenerator) Handler() echo.HandlerFunc                               { return nil }
@@ -87,6 +86,20 @@ func (dg *docGenerator) SetHandler(h echo.HandlerFunc)                          
 func (dg *docGenerator) Logger() echo.Logger                                     { return nil }
 func (dg *docGenerator) Echo() *echo.Echo                                        { return nil }
 func (dg *docGenerator) Reset(r *http.Request, w http.ResponseWriter)            {}
+
+func (dg *docGenerator) NoContent(code int) error {
+	if WarningWhenNotStatusOK && code != http.StatusOK {
+		log.Warnf("[c.NoContent] code is %d", code)
+	}
+	return nil
+}
+
+func (dg *docGenerator) String(code int, s string) error {
+	if WarningWhenNotStatusOK && code != http.StatusOK {
+		log.Warnf("[c.String] code is %d", code)
+	}
+	return nil
+}
 
 func (dg *docGenerator) Cookie(name string) (*http.Cookie, error) {
 	return &DefaultCookie, nil
@@ -333,8 +346,8 @@ func (dg *docGenerator) Bind(i interface{}) error {
 }
 
 func (dg *docGenerator) JSON(code int, i interface{}) error {
-	if code != http.StatusOK {
-		// TODO: ignore?
+	if WarningWhenNotStatusOK && code != http.StatusOK {
+		log.Warnf("[c.JSON] code is %d", code)
 	}
 
 	if FillZeroValue {

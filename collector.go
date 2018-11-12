@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"runtime"
+	log "github.com/sirupsen/logrus"
 )
 
 type apiCollector struct {
@@ -46,6 +47,8 @@ func (g *apiCollector) collect(r *echo.Route, h echo.HandlerFunc) {
 		return
 	}
 
+	log.Infoln("处理", r.Method, r.Path)
+
 	docGen.add(getRealHandlerName(r.Name), r.Method, r.Path)
 
 	if len(comments) > 0 {
@@ -62,6 +65,7 @@ func (g *apiCollector) collect(r *echo.Route, h echo.HandlerFunc) {
 // 考虑到不同的 GET/POST 可能会调到同一个 handler，在 GET/POST 处提取注释是最准确的
 func (g *apiCollector) GET(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route {
 	r := g.group.GET(path, h, m...)
+
 	g.collect(r, h)
 	return r
 }

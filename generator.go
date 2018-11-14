@@ -258,10 +258,9 @@ func getType(i interface{}) string {
 	return typeToString(reflect.TypeOf(i))
 }
 
-// struct / struct 指针 / struct slice
+// struct / struct 指针 / struct slice / struct slice 指针
 func parseStructWithPrefix(prefix string, structType reflect.Type) (params []Param) {
-	if structType.Kind() == reflect.Ptr || structType.Kind() == reflect.Slice {
-		// array 信息已经在上层提取出来了，这里我们只需要内部的信息
+	for structType.Kind() == reflect.Ptr || structType.Kind() == reflect.Slice {
 		structType = structType.Elem()
 	}
 	if structType.Kind() != reflect.Struct {

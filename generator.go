@@ -215,11 +215,19 @@ func dereference(v reflect.Type) reflect.Type {
 	return v
 }
 
-func typeToString(val reflect.Type) string {
-	v := dereference(val)
-	switch v.Kind() {
+func typeToString(type_ reflect.Type) string {
+	t := dereference(type_)
+
+	if jsonType, ok := customGoTypeToJSONType[type_.String()]; ok {
+		return jsonType
+	}
+	if jsonType, ok := customGoTypeToJSONType[type_.Name()]; ok {
+		return jsonType
+	}
+
+	switch t.Kind() {
 	case reflect.Invalid:
-		panic("[typeToString] 暂不支持 " + val.Name())
+		panic("[typeToString] 暂不支持 " + type_.String())
 	case reflect.Bool:
 		return "bool"
 	case reflect.Int,
@@ -240,7 +248,7 @@ func typeToString(val reflect.Type) string {
 		return "string"
 	case reflect.Array,
 		reflect.Slice:
-		return typeToString(v.Elem()) + " array"
+		return typeToString(t.Elem()) + " array"
 	default:
 		return "object"
 	}
@@ -263,6 +271,7 @@ func parseStructWithPrefix(prefix string, structType reflect.Type) (params []Par
 	// 提取 struct 内部信息
 	for i := 0; i < structType.NumField(); i++ {
 		field := structType.Field(i)
+		fieldType := dereference(field.Type)
 
 		jsonTag := field.Tag.Get("json")
 		if jsonTag == "-" {
@@ -276,21 +285,10 @@ func parseStructWithPrefix(prefix string, structType reflect.Type) (params []Par
 			name = strings.Split(jsonTag, ",")[0]
 		}
 		name = prefix + name
-
-		fieldType := dereference(field.Type)
-		isTimeType := fieldType.ConvertibleTo(timeType)
-
-		type_ := typeToString(fieldType)
-		// time.Time 固定成 string
-		if isTimeType {
-			type_ = "string"
-		}
-
-		desc := field.Tag.Get("desc")
-		params = append(params, Param{type_, name, desc})
+		params = append(params, Param{typeToString(fieldType), name, field.Tag.Get("desc")})
 
 		// skip time.Time
-		if !isTimeType {
+		if !fieldType.ConvertibleTo(timeType) {
 			switch fieldType.Kind() {
 			case reflect.Slice,
 				reflect.Ptr,
@@ -310,19 +308,12 @@ func parseStruct(structType reflect.Type) []Param {
 
 func parseMap(mp map[string]interface{}) (params []Param) {
 	for name, val := range mp {
-		valType := reflect.TypeOf(val)
-		valType = dereference(valType)
+		valType := dereference(reflect.TypeOf(val))
 
-		type_ := typeToString(valType)
-		// time.Time 固定成 string
-		if valType.Name() == "Time" {
-			type_ = "string"
-		}
-
-		params = append(params, Param{type_, name, ""})
+		params = append(params, Param{typeToString(valType), name, ""})
 
 		// skip time.Time
-		if valType.Name() != "Time" {
+		if !valType.ConvertibleTo(timeType) {
 			switch valType.Kind() {
 			case reflect.Slice,
 				reflect.Ptr,

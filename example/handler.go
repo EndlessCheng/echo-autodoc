@@ -43,7 +43,7 @@ type handler struct {
 }
 
 func (h *handler) index(c echo.Context) error {
-	return c.String(http.StatusOK, time.Now().Format("2006-01-02 15:04:05"))
+	return c.String(http.StatusOK, JSONTime(time.Now()).String())
 }
 
 func (h *handler) uploadBook(c echo.Context) error {

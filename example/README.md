@@ -47,39 +47,52 @@ URL 参数
 
 |参数|描述|取值|
 |-------|--------|--------|
+|id|书籍 ID|string|
+|created_at|创建时间|string|
 |isbn|ISBN|string|
 |title|书名|string|
 |authors|作者|object array|
+|authors.id|作者 ID|string|
+|authors.created_at|创建时间|string|
 |authors.name|姓名|string|
 |authors.age|年龄|int|
 |authors.sex|性别（0-男，1-女）|int|
 |press|出版社|string|
 |publish_date|出版日期|string|
 |price|定价|float|
-|created_at|创建时间|string|
 
 返回示例：
 ```json
 {
+	"id": "xQ3Wmvrg",
+	"created_at": "2018-11-14 11:31:35",
 	"isbn": "9780262033848",
 	"title": "Introduction to Algorithms, 3rd Edition",
 	"authors": [
 		{
+			"id": "xQ3Wmvrg",
+			"created_at": "2018-11-14T11:31:35.026345+08:00",
 			"name": "Thomas H. Cormen",
 			"age": 62,
 			"sex": 0
 		},
 		{
+			"id": "Rav4N3k2",
+			"created_at": "2018-11-14T11:31:35.026345+08:00",
 			"name": "Charles E. Leiserson",
 			"age": 64,
 			"sex": 0
 		},
 		{
+			"id": "8rjZe3xL",
+			"created_at": "2018-11-14T11:31:35.026345+08:00",
 			"name": "Ronald L. Rivest",
 			"age": 71,
 			"sex": 0
 		},
 		{
+			"id": "GV67K6zN",
+			"created_at": "2018-11-14T11:31:35.026346+08:00",
 			"name": "Clifford Stein",
 			"age": 52,
 			"sex": 0
@@ -87,8 +100,7 @@ URL 参数
 	],
 	"press": "The MIT Press",
 	"publish_date": "2009-07-31",
-	"price": 94,
-	"created_at": "2018-11-07 19:51:42"
+	"price": 94
 }
 ```
 
@@ -103,16 +115,19 @@ JSON 参数
 
 |参数|描述|取值|
 |-------|--------|--------|
+|id|书籍 ID|string|
+|created_at|创建时间|string|
 |isbn|ISBN|string|
 |title|书名|string|
 |authors|作者|object array|
+|authors.id|作者 ID|string|
+|authors.created_at|创建时间|string|
 |authors.name|姓名|string|
 |authors.age|年龄|int|
 |authors.sex|性别（0-男，1-女）|int|
 |press|出版社|string|
 |publish_date|出版日期|string|
 |price|定价|float|
-|created_at|创建时间|string|
 
 返回字段
 

@@ -58,11 +58,24 @@ func ModifyFileHeaderContent(fh *multipart.FileHeader, content []byte) {
 	*ptrToContent = content
 }
 
+// 自定义类型识别
+var (
+	customGoTypeToJSONType = map[string]string{
+		"time.Time": "string",
+		"HashID":    "string",
+		"JSONTime":  "string",
+	}
+)
+
+func AddCustomGoTypeToJSONType(goType string, jsonType string) {
+	customGoTypeToJSONType[goType] = jsonType
+}
+
 // 精确设置 echo 操作返回值
 var (
-	customContextGetReturnMap   = map[string]interface{}{}
-	customQueryParamReturnMap   = map[string]string{}
-	customFormValueReturnMap    = map[string]string{}
+	customContextGetReturnMap = map[string]interface{}{}
+	customQueryParamReturnMap = map[string]string{}
+	customFormValueReturnMap  = map[string]string{}
 	// TODO: customPostJSONFieldValueMap = map[string]interface{}{}
 )
 

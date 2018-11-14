@@ -53,3 +53,11 @@ func (g *_group) GET(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) 
 func (g *_group) POST(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route {
 	return g.group.POST(path, h, m...)
 }
+
+func (g *_group) PUT(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route {
+	return g.group.PUT(path, h, m...)
+}
+
+func (g *_group) DELETE(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route {
+	return g.group.DELETE(path, h, m...)
+}

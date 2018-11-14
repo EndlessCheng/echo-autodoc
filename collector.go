@@ -65,13 +65,24 @@ func (g *apiCollector) collect(r *echo.Route, h echo.HandlerFunc) {
 // 考虑到不同的 GET/POST 可能会调到同一个 handler，在 GET/POST 处提取注释是最准确的
 func (g *apiCollector) GET(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route {
 	r := g.group.GET(path, h, m...)
-
 	g.collect(r, h)
 	return r
 }
 
 func (g *apiCollector) POST(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route {
 	r := g.group.POST(path, h, m...)
+	g.collect(r, h)
+	return r
+}
+
+func (g *apiCollector) PUT(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route {
+	r := g.group.PUT(path, h, m...)
+	g.collect(r, h)
+	return r
+}
+
+func (g *apiCollector) DELETE(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route {
+	r := g.group.DELETE(path, h, m...)
 	g.collect(r, h)
 	return r
 }
